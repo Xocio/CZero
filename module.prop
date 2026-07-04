@@ -1,7 +1,7 @@
 id=CZero
 name=CZero
-version=v1.0
+version=v1.0.0
 versionCode=10000
 author=Github@Xocio
-description=🟠Module will take effect after restart
+description=🟠 Module will take effect after restart
 descriptionAnsi=\e[0m🟠\e[35mModule will take effect after restart
