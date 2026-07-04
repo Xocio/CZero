@@ -1,0 +1,35 @@
+{
+  "general": {
+    "auto_clean": true,
+    "log": false,
+    "notification": false,
+    "temporal_barrier_days": 3
+  },
+  "app_clean": {
+    "detect_schedule": { "every": "PT5M" },
+    "wechat": { "enabled": true, "enhanced": false },
+    "qq": { "enabled": true, "enhanced": false },
+    "douyin": { "enabled": true, "enhanced": false },
+    "other": {
+      "enabled": true,
+      "schedule": { "every": "P1D", "at": "03:00" }
+    }
+  },
+  "suppress": {
+    "enabled": true,
+    "detect_schedule": { "every": "PT1M" }
+  },
+  "gc": {
+    "enabled": true,
+    "dirty_threshold": 200,
+    "clean_threshold": 100,
+    "schedule": { "every": "PT4H" },
+    "script": "/data/adb/modules/CZero/list/GCclean/GCclean1",
+    "wait_screen_off_timeout": 30,
+    "max_runtime_sec": 600
+  },
+  "empty_folder": {
+    "enabled": true,
+    "schedule": { "every": "P1D", "at": "04:00" }
+  }
+}

@@ -1,0 +1,528 @@
+#系统缓存
+/data/data/android/code_cache/*
+/data/data/android/cache/*
+#Wifi万能钥匙
+/storage/emulated/0/WifiMasterKey
+/storage/emulated/0/Android/data/com.snda.wifilocating/files/Download
+/storage/emulated/0/Android/data/com.snda.wifilocating/cache
+/storage/emulated/0/Android/data/com.snda.wifilocating/files/bddownload/img_download
+/storage/emulated/0/Android/data/com.snda.wifilocating/files/bddownload/video_download
+#中国农业银行
+/storage/emulated/0/Android/data/com.android.bankabc/files/theme
+/storage/emulated/0/Android/data/com.android.bankabc/files/video
+/storage/emulated/0/Android/data/com.android.bankabc/files/voice
+#优酷
+/storage/emulated/0/Android/data/com.youku.phone/files/logs
+#中国工商银行
+/storage/emulated/0/icbcimlite
+#百词斩
+/storage/emulated/0/Android/data/com.jiongji.andriod.card/files/log/
+#使命召唤
+/storage/emulated/0/Android/data/com.tencent.tmgp.cod/cache/Cache/Log/*
+/storage/emulated/0/Android/data/com.tencent.tmgp.cod/cache/GameJoyRecorder/logs/*
+/storage/emulated/0/Android/data/com.tencent.tmgp.cod/cache/tmeLivesdk/plugin/log/*
+/storage/emulated/0/Android/data/com.tencent.tmgp.cod/cache/GCloudSDKLog/*
+#主题商店log
+/data/user/0/com.android.thememanager/files/MiPushLog/log1.txt
+#capcut
+/storage/emulated/0/Android/data/com.lemon.lvoverseas/cache
+#小米系统log
+/storage/emulated/0/.xlDownload
+# Android系统缓存
+/data/data/com.google.android.youtube/cache/
+# 系统缓存
+/data/cache/
+# cache文件/文件夹全匹配
+/data/data/*/cache/*
+/data/user/0/*/cache/*
+/data/data/*/code_cache/*
+/data/user_de/0/*/cache/*
+/data/user_de/0/*/code_cache/*
+/data_mirror/data_ce/null/0/*/cache/*
+/data/media/0/Android/data/*/cache/*
+# 讯飞输入法小米版
+/data/data/com.iflytek.inputmethod.miui/cache/
+/data/data/com.iflytek.inputmethod.miui/files/cloud_result_cache
+/data/data/com.iflytek.inputmethod.miui/files/cloud_result_cache.assocache
+/data/data/com.iflytek.inputmethod.miui/files/cloud_result_cache.expandcache
+/data/data/com.iflytek.inputmethod.miui/files/cloud_result_cache.immediately
+#小米搜狗输入法
+/storage/emulated/0/Android/data/com.sohu.inputmethod.sogou.xiaomi/files/sogou/corelog
+# 游戏中心
+/data/media/0/migamecenter/
+# 小米商城
+/data/media/0/mishop/
+/data/data/com.xiaomi.shop/.cesium/
+/data/data/com.xiaomi.shop/app_/
+/data/data/com.xiaomi.shop/app_bugly/
+/data/data/com.xiaomi.shop/app_patch_plugin/
+/data/data/com.xiaomi.shop/app_pluginOutDex/
+/data/data/com.xiaomi.shop/app_textures/
+/data/data/com.xiaomi.shop/code_cache/
+# YC调度
+/data/media/0/yc/uperf/log_uperf.txt.bak
+/data/media/0/Android/log_uperf.txt.bak
+/data/media/0/Android/panel_uperf.txt.bak
+# THANOX
+/data/data/github.tornaco.android.thanos/cache/
+/storage/emulated/0/Android/data/github.tornaco.android.thanos/cache/logs/*
+# 快手相关目录
+/data/data/com.smile.gifmaker/app_.post/
+/data/data/com.smile.gifmaker/app_kswebview_kwv_utils_process/
+/data/data/com.smile.gifmaker/app_kswebview_mini0/
+/data/data/com.smile.gifmaker/app_lib/
+/data/data/com.smile.gifmaker/app_textures/
+/data/data/com.smile.gifmaker/app_workspace/
+/data/data/com.smile.gifmaker/code_cache/
+/data/data/com.smile.gifmaker/cache/
+/data/data/com.smile.gifmaker/exception/
+/data/data/com.smile.gifmaker/robust2/
+/data/data/com.smile.gifmaker/safe_mode/
+/data/media/0/Android/data/com.smile.gifmaker/cache/
+/data/data/com.smile.gifmaker/files/yoda_offline_package/
+/data/data/com.smile.gifmaker/files/yoda_code_cache/
+/data/data/com.smile.gifmaker/files/debuglog/
+/data/data/com.smile.gifmaker/app_cache/
+/data/data/com.smile.gifmaker/app_DvaPlugin/
+/data/data/com.smile.gifmaker/files/MetaDiskCache/image_cache/
+/data/data/com.smile.gifmaker/files/image_cache/
+# 网易云音乐
+/data/media/0/Android/data/com.netease.cloudmusic/cache/
+# 哔哩哔哩
+/data/media/0/Android/data/tv.danmaku.bili/cache/
+/data/data/tv.danmaku.bili/app_annual_report/
+/data/data/tv.danmaku.bili/app_blog_v3/
+/data/data/tv.danmaku.bili/app_bugly/
+/data/data/tv.danmaku.bili/app_textures/
+/data/data/tv.danmaku.bili/cache/
+/data/data/tv.danmaku.bili/code_cache/
+/data/data/tv.danmaku.bili/MainTopMenu/
+/data/data/tv.danmaku.bili/app_mod_resource/cache/
+/data/data/tv.danmaku.bili/files/res_cache/
+/data/data/tv.danmaku.bili/app_webview_tv.danmaku.bili_web/Default/Service Worker/CacheStorage/
+/data/data/tv.danmaku.bili/app_webview_tv.danmaku.bili_web/Default/Service Worker/ScriptCache/
+/data/data/tv.danmaku.bili/app_blog_v3/*
+/data/data/tv.danmaku.bili/app_mod_resource/*
+/data/data/tv.danmaku.bili/app_mod_resource/preinstall/
+
+/storage/emulated/0/Android/data/tv.danmaku.bili/cache/default/
+/storage/emulated/0/Android/data/tv.danmaku.bili/cache/okretro/
+/storage/emulated/0/Android/data/tv.danmaku.bili/files/Music/
+# 应用日志文件
+/data/media/0/Android/data/com.tencent.mobileqq/Tencent/log/
+/data/media/0/Android/data/com.coolapk.market/files/log/
+/data/media/0/tencent/tmp/vodPcdnMSdkPeerId.log
+/data/media/0/Android/data/com.quark.browser/files/tnetlogs/inapp_20230503.log
+/data/media/0/Android/data/com.tencent.mobileqq/files/tencent/msflogs/com/tencent/mobileqq/
+# 玩机应用专区
+/data/media/0/Android/data/flar2.exkernelmanager/cache/
+/data/media/0/Android/data/eu.thedarken.sdm/cache/
+/data/media/0/Android/data/com.byyoung.setting/cache/
+/data/data/com.Sunshine.ToolBox/code_cache/
+/data/data/com.Sunshine.ToolBox/cache/
+# 美团
+/data/data/com.sankuai.meituan/files/cips/common/mtplatform_msc/assets/PackageAttachment/
+/data/user/0/com.sankuai.meituan/cache/
+/data/data/com.sankuai.meituan/files/cips/common/mrn_default/
+# 皇室战争
+/data/media/0/Android/data/com.tencent.tmgp.supercell.clashroyale/cache/
+# 和平精英
+/data/data/com.tencent.tmgp.pubgmhd/app_bugly/
+/data/data/com.tencent.tmgp.pubgmhd/app_crashSight/
+/data/data/com.tencent.tmgp.pubgmhd/app_dex/
+/data/data/com.tencent.tmgp.pubgmhd/app_midasodex/
+/data/data/com.tencent.tmgp.pubgmhd/app_pluginlib/
+/data/data/com.tencent.tmgp.pubgmhd/app_textures/
+/data/data/com.tencent.tmgp.pubgmhd/app_turingdfp/
+/data/data/com.tencent.tmgp.pubgmhd/app_turingsmi/
+/data/data/com.tencent.tmgp.pubgmhd/code_cache/
+# 王者荣耀
+/data/data/com.tencent.tmgp.sgame/app_crashSight/
+/data/data/com.tencent.tmgp.sgame/app_dex/
+/data/data/com.tencent.tmgp.sgame/app_midasodex/
+/data/data/com.tencent.tmgp.sgame/app_textures/
+/data/data/com.tencent.tmgp.sgame/app_tomb/
+/data/data/com.tencent.tmgp.sgame/code_cache/
+# 腾讯专区
+/data/media/0/Android/data/com.tencent.ams/cache/
+/data/media/0/Android/data/com.tencent.mobileqq/cache/
+/data/media/0/Tencent/ams/
+/data/media/0/Tencent/msflogs/
+/data/media/0/Android/data/com.tencent.ams/
+# TIM
+/data/data/com.tencent.tim/cache/
+/data/data/com.tencent.tim/code_cache/
+/data/data/com.tencent.tim/app_x5webview/
+/data/data/com.tencent.tim/app_cache/
+/data/data/com.tencent.tim/app_bugly/
+/data/data/com.tencent.tim/app_storage/
+/data/data/com.tencent.tim/app_x5webview_mini/
+/data/data/com.tencent.tim/.vfs/
+/data/data/com.tencent.tim/app_odex/
+/data/data/com.tencent.tim/app_qqwifi_dir/
+/data/data/com.tencent.tim/app_dex/
+/data/data/com.tencent.tim/app_exposured_ad/
+/data/data/com.tencent.tim/app_database_tool/
+/data/data/com.tencent.tim/app_crashrecord/
+/data/data/com.tencent.tim/app_.emojiSticker_v2.1/
+/data/data/com.tencent.tim/app_appcache_tool/
+/data/data/com.tencent.tim/cert/
+/data/data/com.tencent.tim/immer/
+/data/data/com.tencent.tim/filescommonCache/
+/data/data/com.tencent.tim/app_tombs/
+/data/data/com.tencent.tim/app_theme_810/
+/data/data/com.tencent.tim/app_textures/
+/data/data/com.tencent.tim/app_TBSqmsp/
+/data/data/com.tencent.tim/app_qzoneupload/
+# QQ浏览器
+/data/media/0/MasterArchive/
+# QQ音乐
+/data/media/0/qqmusic/gift_anim_zip
+/data/media/0/qqmusic/wxa_app_res
+/data/media/0/qqmusiclite/firstPiece
+/data/data/com.tencent.qqmusic/app_bugly/
+/data/data/com.tencent.qqmusic/app_dex/
+/data/data/com.tencent.qqmusic/app_fireeye/
+/data/data/com.tencent.qqmusic/app_fireeye_crashrecord/
+/data/data/com.tencent.qqmusic/app_klv/
+/data/data/com.tencent.qqmusic/app_lcore_music/
+/data/data/com.tencent.qqmusic/app_midasodex/
+/data/data/com.tencent.qqmusic/app_qmsp/
+/data/data/com.tencent.qqmusic/app_textures/
+/data/data/com.tencent.qqmusic/app_TVKqmsp/
+/data/data/com.tencent.qqmusic/cfont/
+/data/data/com.tencent.qqmusic/code_cache/
+/data/data/com.tencent.qqmusic/videosong/
+/data/media/0/qqmusic/playerlog/
+/data/media/0/qqmusic/mainLog
+/data/media/0/qqmusic/safemode.slog
+# QQ邮箱
+/data/data/com.tencent.androidqqmail/app_bugly/
+/data/data/com.tencent.androidqqmail/app_crashrecord/
+/data/data/com.tencent.androidqqmail/app_patch/
+/data/data/com.tencent.androidqqmail/app_textures/
+/data/data/com.tencent.androidqqmail/app_turingdfp/
+/data/data/com.tencent.androidqqmail/app_turingfd/
+/data/data/com.tencent.androidqqmail/cache/
+/data/data/com.tencent.androidqqmail/code_cache/
+/data/data/com.tencent.androidqqmail/moai_cache/
+/data/data/com.tencent.androidqqmail/app_webview/Default/GPUCache/
+/data/data/com.tencent.androidqqmail/app_webview/Default/Local Storage/leveldb/*.log
+/data/data/com.tencent.androidqqmail/app_webview/Default/Session Storage/*.log
+# 百度网盘
+/data/media/0/baidunetdisk/.audiocache
+/data/media/0/baidunetdisk/百度网盘收件箱/.thumbnails
+# 支付宝
+/data/data/com.eg.android.AlipayGphone/app_crash/
+/data/data/com.eg.android.AlipayGphone/app_cyclone/
+/data/data/com.eg.android.AlipayGphone/app_plugins_delay/
+/data/data/com.eg.android.AlipayGphone/app_plugins_opt/
+/data/data/com.eg.android.AlipayGphone/app_plugins_patch/
+/data/data/com.eg.android.AlipayGphone/app_scan_plugins_lib/
+/data/data/com.eg.android.AlipayGphone/app_sslcache/
+/data/data/com.eg.android.AlipayGphone/app_textures/
+/data/data/com.eg.android.AlipayGphone/app_u4_webview/
+/data/data/com.eg.android.AlipayGphone/app_u4_webview_1/
+/data/data/com.eg.android.AlipayGphone/ccit/
+/data/data/com.eg.android.AlipayGphone/code_cache/
+/data/data/com.eg.android.AlipayGphone/permission_guard/
+/data/data/com.eg.android.AlipayGphone/ucwa/
+# 钉钉
+/data/data/com.alibaba.android.rimet/app_anr_com.alibaba.android.rimet/
+/data/data/com.alibaba.android.rimet/app_anr_com.alibaba.android.rimet:push/
+/data/data/com.alibaba.android.rimet/app_anr_com.alibaba.android.rimet:sandboxed_privilege_process0/
+/data/data/com.alibaba.android.rimet/app_cache/
+/data/data/com.alibaba.android.rimet/app_crash/
+/data/data/com.alibaba.android.rimet/app_flutter/
+/data/data/com.alibaba.android.rimet/app_fulltrace/
+/data/data/com.alibaba.android.rimet/app_h5container/
+/data/data/com.alibaba.android.rimet/app_plugins/
+/data/data/com.alibaba.android.rimet/app_textures/
+/data/data/com.alibaba.android.rimet/code_cache/
+/data/data/com.alibaba.android.rimet/ucwa/
+/data/media/0/Android/data/com.alibaba.android.rimet/cache/
+# 花瓣测速
+/data/data/com.huawei.genexcloud.speedtest/code_cache/
+/data/data/com.huawei.genexcloud.speedtest/cache/
+# 酷安
+/data/media/0/Android/data/com.coolapk.market/files/event/
+/data/media/0/Android/data/com.coolapk.market/files/eventUploading/
+/data/media/0/Android/data/com.coolapk.market/files/pangle_com.byted.pangle.m/
+/data/media/0/Android/data/com.coolapk.market/files/papm/
+/data/media/0/Android/data/com.coolapk.market/files/papm4sdk/
+/data/media/0/Android/data/com.coolapk.market/files/qCrash/
+/data/media/0/Android/data/com.coolapk.market/files/rough_draft/
+/data/media/0/Android/data/com.coolapk.market/files/tencent/
+/data/media/0/Android/data/com.coolapk.market/files/logs/
+/data/media/0/Android/data/com.coolapk.market/files/.*
+/data/media/0/Android/data/com.coolapk.market/cache/
+/data/media/0/Android/data/com.coolapk.market/files/TTCache/
+/data/data/com.coolapk.market/app_webview/GPUCache/
+/data/data/com.coolapk.market/cache/image_manager_disk_cache/
+/data/media/0/Android/data/com.coolapk.market/cachett_ad/video_feed
+/data/media/0/Android/data/com.coolapk.market/files/rough_draft/rough_draft.bin
+/data/user_de/0/com.coolapk.market/code_cache/
+/data/data/com.coolapk.market/.oabugaij/
+/data/data/com.coolapk.market/app_bugly/
+/data/data/com.coolapk.market/app_DUHOME/
+/data/data/com.coolapk.market/app_e_qq_com_dex_97550f1d11c73369bbee8f7d47965447/
+/data/data/com.coolapk.market/app_textures/
+/data/data/com.coolapk.market/pangle_com.byted.pangle/
+/data/data/com.coolapk.market/pangle_com.byted.rewardx/
+/data/data/com.coolapk.market/qihooCrash/
+/data/media/0/Android/data/com.coolapk.market/files/Download/*.dl
+/data/media/0/Android/data/com.coolapk.market/files/Download/*.apk
+# 米游社
+/data/data/com.mihoyo.hyperion/app_bugly/
+/data/data/com.mihoyo.hyperion/app_databases/
+/data/data/com.mihoyo.hyperion/app_flutter/
+/data/data/com.mihoyo.hyperion/app_textures/
+/data/data/com.mihoyo.hyperion/code_cache/
+/data/data/com.coolapk.market/app_sslcache/*
+# 拼多多
+/data/data/com.xunmeng.pinduoduo/app_meco_textures/
+/data/data/com.xunmeng.pinduoduo/app_textures/
+/data/data/com.xunmeng.pinduoduo/cache/
+/data/data/com.xunmeng.pinduoduo/app_webview/webrtc_event_logs/
+/data/data/com.xunmeng.pinduoduo/app_webview/GPUCache/
+/data/data/com.xunmeng.pinduoduo/code_cache/
+# 淘宝
+/data/media/0/Android/data/com.taobao.taobao/cache/
+/data/data/com.taobao.taobao/app_alipay_msp_disk_cache/
+/data/data/com.taobao.taobao/app_anr_com.taobao.taobao/
+/data/data/com.taobao.taobao/app_anr_com.taobao.taobao:channel/
+/data/data/com.taobao.taobao/app_anr_com.taobao.taobao:gpu_process/
+/data/data/com.taobao.taobao/app_anr_com.taobao.taobao:sandboxed_privilege_process0/
+/data/data/com.taobao.taobao/app_crash/
+/data/data/com.taobao.taobao/app_DaemonDir/
+/data/data/com.taobao.taobao/app_flutter/
+/data/data/com.taobao.taobao/app_SyncSDK_Data/
+/data/data/com.taobao.taobao/app_tdata_v9/
+/data/data/com.taobao.taobao/app_textures/
+/data/data/com.taobao.taobao/app_tlog_v9/
+/data/data/com.taobao.taobao/code_cache/
+/data/data/com.taobao.taobao/cache/
+# 京东
+/data/data/com.jingdong.app.mall/app_dex/
+/data/data/com.jingdong.app.mall/app_flutter/
+/data/data/com.jingdong.app.mall/app_foldBSPatch/
+/data/data/com.jingdong.app.mall/app_reactISV/
+/data/data/com.jingdong.app.mall/app_reactnative/
+/data/data/com.jingdong.app.mall/app_reactpreload/
+/data/data/com.jingdong.app.mall/app_textures/
+/data/data/com.jingdong.app.mall/code_cache/
+# 夸克
+/data/data/com.quark.browser/main/gilde_cache/
+/data/data/com.quark.browser/cache/localThumbnails/
+/data/data/com.quark.browser/cache/pangle_com.byted.pangle/tt_ad/image/
+/data/data/com.quark.browser/cache/pangle_com.byted.pangle/tt_ad/video_default/
+/data/data/com.quark.browser/cache/u4_webview/v8_cache/
+/data/data/com.quark.browser/cache/xtts/
+/data/media/0/com.quark.browser/
+/data/media/0/ttscache/
+/data/data/com.quark.browser/_tmp/
+/data/data/com.quark.browser/app_flutter/
+/data/data/com.quark.browser/app_jsi/
+/data/data/com.quark.browser/app_libs/
+/data/data/com.quark.browser/app_noah_log/
+/data/data/com.quark.browser/app_textures/
+/data/data/com.quark.browser/app_tt_pangle_bykv_file/
+/data/data/com.quark.browser/code_cache/
+/data/data/com.quark.browser/pangle_com.byted.pangle/
+/data/data/com.quark.browser/mnn/
+/data/data/com.quark.browser/watermark/
+# Chrome
+/data/data/com.android.chrome/app_chrome/Default/GPUCache/
+/data/data/com.android.chrome/app_chrome/GrShaderCache/GPUCache/
+/data/data/com.android.chrome/cache/Cache/
+/data/data/com.android.chrome/cache/Code Cache/js/
+/data/data/com.android.chrome/code_cache/
+/data/data/com.android.chrome/databases/
+/data/data/com.android.chrome/files/
+# 搜狗
+/data/media/0/sogou/.hotexp
+/data/media/0/sogou/.trick
+/data/media/0/sogou/voice
+/data/media/0/SogouExplorer
+/data/data/com.sogou.novel/files/data/novel-image
+/data/data/com.sogou.novel/files/data/version
+/data/data/com.sogou.novel/files/html
+/data/data/com.sogou.novel/files/splash
+/data/data/com.sogou.toptennews/files/awcn_strategy
+/data/data/com.sogou.appmall/image
+/data/data/com.sogou.novel/files/.book
+/data/data/com.sogou.novel/files/book
+/data/data/com.sogou.novel/files/data/novel-download
+# 夸克浏览器
+/data/media/0/Android/data/com.quark.browser/cache/
+/data/data/com.snda.wifilocating/cache/
+/data/data/com.snda.wifilocating/cache/picasso-cache/
+# 高德地图
+/data/data/com.autonavi.minimap/cache/
+/data/data/com.autonavi.minimap/files/ajx-biz/db/
+# 番茄免费小说
+/data/data/com.dragon.read/app_accs/
+/data/data/com.dragon.read/app_dex/
+/data/data/com.dragon.read/app_librarian/
+/data/data/com.dragon.read/app_textures/
+/data/data/com.dragon.read/pangle_com.byted.pangle/
+/data/data/com.dragon.read/app_webview_com.dragon.read:downloader/
+/data/data/com.dragon.read/app_webview_com.dragon.read:miniappX/
+/data/data/com.dragon.read/app_webview_com.dragon.read:push/
+/data/data/com.dragon.read/app_webview_com.dragon.read:pushservice/
+/data/data/com.dragon.read/app_webviewbytedance_com.dragon.read:miniappX/
+/data/data/com.dragon.read/cache/
+/data/data/com.dragon.read/code_cache/
+/data/data/com.dragon.read/files/.envelope/
+/data/data/com.dragon.read/files/.pangle_i/
+/data/data/com.dragon.read/files/.patchs/
+/data/data/com.dragon.read/files/.pre_download/
+/data/data/com.dragon.read/files/ALOG/
+/data/data/com.dragon.read/files/gecko-resume-net-work/
+/data/data/com.dragon.read/files/hybrid_settings_downloader/
+/data/data/com.dragon.read/files/mediattmp/
+/data/data/com.dragon.read/files/netlog_temp/
+/data/data/com.dragon.read/files/offline/
+/data/data/com.dragon.read/files/offline_tts/
+/data/data/com.dragon.read/files/offline_tts_log/
+/data/data/com.dragon.read/files/splashCache/
+/data/data/com.dragon.read/files/tdReadTemp/
+/data/data/com.dragon.read/app_tt_pangle_bykv_file/
+/data/data/com.dragon.read/app_webview/
+/data/data/com.dragon.read/app_webviewbytedance_com.dragon.read/
+/data/data/com.dragon.read/lib-main/
+/data/data/com.dragon.read/small_emoji_res/
+/storage/emulated/0/Android/data/com.dragon.read/files/logs/
+# 快手极速版
+/data/media/0/Android/data/com.kuaishou.nebula/cache/
+/data/media/0/Android/data/com.kuaishou.nebula/files/.warmup/
+/data/data/com.kuaishou.nebula/app_lib/
+/data/data/com.kuaishou.nebula/cache/
+# 快手概念版
+/data/data/com.kwai.thanos/app_.post/
+/data/data/com.kwai.thanos/app_gdata/
+/data/data/com.kwai.thanos/app_kswebview_kwv_utils_process/
+/data/data/com.kwai.thanos/app_textures/
+/data/data/com.kwai.thanos/app_tflite/
+/data/data/com.kwai.thanos/app_workspace/
+/data/data/com.kwai.thanos/code_cache/
+/data/data/com.kwai.thanos/exception/
+# 酷我音乐
+/data/media/0/Android/data/cn.kuwo.player/files/KuwoMusic/.localhtml
+/data/media/0/Android/data/cn.kuwo.player/files/KuwoMusic/.pendant
+/data/media/0/Android/data/cn.kuwo.player/files/KuwoMusic/.videoUpload
+/data/media/0/Android/data/cn.kuwo.player/files/KuwoMusic/.wx
+/data/media/0/Android/data/cn.kuwo.player/files/KuwoMusic/centerpush
+/data/media/0/Android/data/cn.kuwo.player/files/KuwoMusic/custombootcover
+/data/media/0/Android/data/cn.kuwo.player/files/KuwoMusic/picture
+/data/media/0/Android/data/cn.kuwo.player/files/KuwoMusic/push
+/data/media/0/Android/data/cn.kuwo.player/files/KuwoMusic/screenad
+/data/media/0/Android/data/cn.kuwo.player/files/KuwoMusic/welcome
+/data/media/0/Android/data/cn.kuwo.player/files/kuwomusic/.localhtml
+/data/media/0/Android/data/cn.kuwo.player/files/kuwomusic/.pendant
+/data/media/0/Android/data/cn.kuwo.player/files/kuwomusic/.videoUpload
+/data/media/0/Android/data/cn.kuwo.player/files/kuwomusic/.wx
+/data/media/0/Android/data/cn.kuwo.player/files/kuwomusic/centerpush
+/data/media/0/Android/data/cn.kuwo.player/files/kuwomusic/custombootcover
+/data/media/0/Android/data/cn.kuwo.player/files/kuwomusic/picture
+/data/media/0/Android/data/cn.kuwo.player/files/kuwomusic/push
+/data/media/0/Android/data/cn.kuwo.player/files/kuwomusic/screenad
+/data/media/0/Android/data/cn.kuwo.player/files/kuwomusic/welcome
+/data/data/com.xunmeng.pinduoduo/cache/pdd_video_cache/
+# 菜鸟
+/data/media/0/Android/data/com.cainiao.wireless/files/amapcn
+/data/media/0/Android/data/com.cainiao.wireless/files/images
+/data/media/0/Android/data/com.cainiao.wireless/files/splash_ads
+# 闲鱼
+/data/data/com.taobao.idlefish/cache/
+/data/data/com.taobao.idlefish/code_cache/
+/data/data/com.taobao.idlefish/app_crash/
+/data/data/com.taobao.idlefish/app_cyclone/
+/data/data/com.taobao.idlefish/app_flutter/
+/data/data/com.taobao.idlefish/app_textures/
+/data/data/com.taobao.idlefish/ucwa/
+/data/media/0/Android/data/com.taobao.idlefish/app_webview/
+# 美团
+/data/data/com.sankuai.meituan/app_patch_cache/
+/data/data/com.sankuai.meituan/app_textures/
+/data/data/com.sankuai.meituan/cache/
+/data/data/com.sankuai.meituan/code_cache/
+# 招商银行
+/data/data/cmb.pb/.cache/
+/data/data/cmb.pb/app_webview/GPUCache/
+/data/data/cmb.pb/cache/GlideCache/
+/data/data/cmb.pb/cache/marketingcache/
+/data/data/cmb.pb/cache/org.chromium.android_webview/
+# 今日头条
+/data/data/com.ss.android.article.news/cache/image_cache/v2.ols100.1/
+/data/data/com.ss.android.article.news/cache/org.chromium.android_webview/
+/data/data/com.ss.android.article.news/cache/ss-http-cache-v2/
+/data/data/com.ss.android.article.news/cache/ttnet_storage/prefs/
+/data/data/com.ss.android.article.news/cache/webviewbytedance_com.ss.android.article.news/Default/HTTP Cache/
+/data/data/com.ss.android.article.news/app_webviewbytedance_com.ss.android.article.news/Default/GPUCache/
+# 快手极速版
+/data/data/com.kuaishou.nebula/cache/kswebview_kwv_utils_process/Default/HTTP Cache/Code Cache/
+/data/data/com.kuaishou.nebula/cache/kxb_v2/tmp/
+/data/data/com.kuaishou.nebula/cache/WebView/Default/HTTP Cache/
+/data/data/com.kuaishou.nebula/files/image_cache/v2.ols100.1/
+# 中国电信
+/data/data/com.ct.client/.cesium/
+/data/data/com.ct.client/app_crash/
+/data/data/com.ct.client/app_textures/
+/data/data/com.ct.client/code_cache/
+/data/data/com.ct.client/cache/
+# 123云盘
+/data/media/0/123云盘/json/
+/data/data/com.mfcloudcalculate.networkdisk/app_flutter/
+/data/data/com.mfcloudcalculate.networkdisk/app_textures/
+/data/data/com.mfcloudcalculate.networkdisk/code_cache/
+/data/data/com.mfcloudcalculate.networkdisk/crashsdk/
+# xVideos
+/data/data/com.example.w.xVideos/app_tbs/
+/data/data/com.example.w.xVideos/app_textures/
+/data/data/com.example.w.xVideos/cache/
+/data/data/com.example.w.xVideos/code_cache/
+# 酷安
+# 推送SDK缓存
+/storage/emulated/0/Android/data/com.coolapk.market/sdcard/.vivo
+# 缓存文件
+/storage/emulated/0/Android/data/com.coolapk.market/cache
+/data/user/0/com.coolapk.market/cache
+# tbs日志文件
+/storage/emulated/0/Android/data/com.coolapk.market/files/tbslog
+# tap临时缓存文件
+/storage/emulated/0/Android/data/com.coolapk.market/files/Download/taptaptmp
+# 网页缓存文件
+/storage/emulated/0/Android/data/com.coolapk.market/files/web_file
+# 保存的图片文件
+/storage/emulated/0/Android/data/com.coolapk.market/files/Pictures
+# 广告视频缓存文件
+/storage/emulated/0/Android/data/com.coolapk.market/files/cachett_ad
+# 日志文件
+/storage/emulated/0/Android/data/com.coolapk.market/files/log
+# tbs_common_log日志文件
+/storage/emulated/0/Android/data/com.coolapk.market/files/tencent/tbs_common_log
+# apk下载目录
+/storage/emulated/0/Android/data/com.coolapk.market/files/Download
+# 京东
+# IM通信
+/storage/emulated/0/JDIM
+# 网页日志文件夹
+/storage/emulated/0/Android/data/com.jingdong.app.mall/files/webview
+# 日志文件夹
+/storage/emulated/0/Android/data/com.jingdong.app.mall/files/tbslog
+# 图标缓存文件夹
+/storage/emulated/0/Android/data/com.jingdong.app.mall/files/image
+# 垃圾缓存
+/storage/emulated/0/Android/data/com.jingdong.app.mall/files
+# 缓存
+/data/user/0/com.jingdong.app.mall/cache
+# QQ登录SDK文件
+/storage/emulated/0/Android/data/com.jingdong.app.mall/files/tencent/mobileqq/opensdk
+# 缓存文件
+/storage/emulated/0/Android/data/com.jd.pingou/files/image
+# Log
+/storage/emulated/0/Android/data/com.jd.pingou/files/tbslog
+/data/adb/modules/CZeroAForest/log
+# MT管理器
+/storage/emulated/0/Android/data/bin.mt.plus/files/tencent/mobileqq/opensdk/logs/*
