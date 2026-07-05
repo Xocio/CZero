@@ -1,0 +1,12 @@
+/* 缩小首页 hero 大 LOGO */
+.VPHero .VPImage.image-src {
+  max-width: 180px;
+  max-height: 180px;
+}
+
+@media (min-width: 960px) {
+  .VPHero .VPImage.image-src {
+    max-width: 220px;
+    max-height: 220px;
+  }
+}
