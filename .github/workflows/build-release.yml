@@ -34,6 +34,7 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: "1.22"
+          cache: false
 
       - name: Resolve NDK
         id: ndk
@@ -86,16 +87,14 @@ jobs:
           build_go list/customize.go         list/customize
 
       - name: Verify ELF (arch + no libc++_shared)
-        env:
-          NDK_BIN: ${{ steps.ndk.outputs.bin }}
         run: |
           set -euo pipefail
-          READELF="$NDK_BIN/llvm-readelf"
           for f in service cron/timer_daemon list/Tencent/check list/suppress/suppress \
                    list/Emptyfolder/emptyfolder list/GCclean/GCclean1 list/zero; do
-            file "$f"
-            "$READELF" -h "$f" | grep -q "AArch64" || { echo "$f 非 AArch64"; exit 1; }
-            if "$READELF" -d "$f" 2>/dev/null | grep -q "libc++_shared.so"; then
+            info=$(file "$f")
+            echo "$info"
+            echo "$info" | grep -qi 'aarch64' || { echo "$f 非 aarch64"; exit 1; }
+            if readelf -d "$f" 2>/dev/null | grep -qi 'libc++_shared'; then
               echo "$f 动态依赖 libc++_shared.so —— 静态链接失败"; exit 1
             fi
           done
