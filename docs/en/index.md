@@ -1,0 +1,36 @@
+---
+# https://vitepress.dev/reference/default-theme-home-page
+layout: home
+
+hero:
+  name: "CZero"
+  text: "Android Root Cleaning Module"
+  tagline: Cache cleaning for frequently used apps, plus background suppression, empty-folder cleanup, and F2FS garbage collection. No resident service, changes take effect instantly.
+  image:
+    src: /logo.png
+    alt: CZero
+  actions:
+    - theme: brand
+      text: Get Started
+      link: /en/guide/getting-started
+    - theme: alt
+      text: What is CZero
+      link: /en/guide/what-is-czero
+    - theme: alt
+      text: GitHub
+      link: https://github.com/Xocio/CZero
+
+features:
+  - title: Cache Cleaning
+    details: Per-app cleaning scripts for frequently used apps, triggered on schedule and gated by whether the app is actually running, with an optional enhanced mode.
+  - title: Background Suppression
+    details: Periodically detects and suppresses target apps running in the background, cutting needless memory and battery use.
+  - title: F2FS GC
+    details: Monitors dirty segments and runs garbage collection past a threshold, waiting for screen-off with a runtime cap.
+  - title: No Resident Service
+    details: A lightweight C++ daemon schedules every task according to config.json, at near-zero cost.
+  - title: Hot-Reload Config
+    details: The daemon watches config.json and applies changes instantly; a broken config never interrupts the last-good job set.
+  - title: Native Companion App
+    details: All configuration happens through the native CZeroX app, with live status and stats — no WebUI required.
+---
