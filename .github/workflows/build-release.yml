@@ -1,0 +1,185 @@
+name: Build & Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_tag:
+        description: "版本标签（留空自动读取 module.prop）"
+        required: false
+        default: ""
+      title:
+        description: "Release 标题 (留空则用版本标签)"
+        required: false
+        default: ""
+      changelog:
+        description: "更新内容"
+        required: true
+      prerelease:
+        description: "标记为预发布 (pre-release)"
+        type: boolean
+        required: false
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+
+      - name: Resolve NDK
+        id: ndk
+        run: |
+          set -euo pipefail
+          NDK="${ANDROID_NDK_LATEST_HOME:-${ANDROID_NDK_ROOT:-}}"
+          if [ -z "$NDK" ] || [ ! -d "$NDK" ]; then
+            echo "找不到预装 NDK (ANDROID_NDK_LATEST_HOME / ANDROID_NDK_ROOT)"; exit 1
+          fi
+          BIN="$NDK/toolchains/llvm/prebuilt/linux-x86_64/bin"
+          echo "bin=$BIN" >> "$GITHUB_OUTPUT"
+          echo "使用 NDK: $NDK"
+          "$BIN/clang++" --version | head -1
+
+      - name: Compile native binaries
+        env:
+          NDK_BIN: ${{ steps.ndk.outputs.bin }}
+        run: |
+          set -euo pipefail
+          CLANGXX="$NDK_BIN/clang++"
+          STRIP="$NDK_BIN/llvm-strip"
+          TARGET="aarch64-linux-android28"
+
+          CXXFLAGS="--target=$TARGET -std=c++17 -Oz -I. -static-libstdc++ -fno-rtti \
+            -ffunction-sections -fdata-sections -fvisibility=hidden -fomit-frame-pointer \
+            -Wl,--gc-sections -Wl,--as-needed -Wl,-s -Wl,--build-id=none"
+
+          build_cpp() {
+            echo "  [C++] $1"
+            "$CLANGXX" $CXXFLAGS -o "$2" "$1.cpp"
+            "$STRIP" --strip-all "$2" || true
+          }
+          build_go() {
+            echo "  [Go ] $1"
+            GOOS=android GOARCH=arm64 CGO_ENABLED=0 \
+              go build -trimpath -ldflags "-s -w -buildid=" -o "$2" "$1"
+          }
+
+          build_cpp service service
+          build_cpp cron/timer_daemon cron/timer_daemon
+          build_cpp list/Tencent/check list/Tencent/check
+          build_cpp list/suppress/suppress list/suppress/suppress
+          build_cpp list/Emptyfolder/emptyfolder list/Emptyfolder/emptyfolder
+          build_cpp list/GCclean/GCclean1 list/GCclean/GCclean1
+          build_cpp list/zero list/zero
+
+          build_go list/Tencent/tencentmm.go list/Tencent/tencentmm
+          build_go list/Tencent/mobileqq.go  list/Tencent/mobileqq
+          build_go list/Tencent/ugcaweme.go  list/Tencent/ugcaweme
+          build_go list/customize.go         list/customize
+
+      - name: Verify ELF (arch + no libc++_shared)
+        env:
+          NDK_BIN: ${{ steps.ndk.outputs.bin }}
+        run: |
+          set -euo pipefail
+          READELF="$NDK_BIN/llvm-readelf"
+          for f in service cron/timer_daemon list/Tencent/check list/suppress/suppress \
+                   list/Emptyfolder/emptyfolder list/GCclean/GCclean1 list/zero; do
+            file "$f"
+            "$READELF" -h "$f" | grep -q "AArch64" || { echo "$f 非 AArch64"; exit 1; }
+            if "$READELF" -d "$f" 2>/dev/null | grep -q "libc++_shared.so"; then
+              echo "$f 动态依赖 libc++_shared.so —— 静态链接失败"; exit 1
+            fi
+          done
+          echo "全部二进制校验通过"
+
+      - name: Resolve version
+        id: ver
+        run: |
+          set -euo pipefail
+          IN="${{ github.event.inputs.version_tag }}"
+          if [ -n "$IN" ]; then
+            VER="$IN"
+          else
+            VER=$(grep '^version=' module.prop | cut -d= -f2 | tr -d '[:space:]')
+          fi
+          [ -n "$VER" ] || { echo "无法确定版本号"; exit 1; }
+          echo "version=$VER" >> "$GITHUB_OUTPUT"
+          echo "版本: $VER"
+
+      - name: Package Magisk zip
+        id: pack
+        env:
+          VER: ${{ steps.ver.outputs.version }}
+        run: |
+          set -euo pipefail
+          STAGE="dist/CZero"
+          rm -rf dist && mkdir -p "$STAGE"
+
+          FILES=(
+            module.prop customize.sh service.sh config.json
+            service
+            cron/timer_daemon
+            list/Tencent/check list/Tencent/tencentmm list/Tencent/mobileqq list/Tencent/ugcaweme
+            list/suppress/suppress
+            list/Emptyfolder/emptyfolder list/Emptyfolder/directories.prop list/Emptyfolder/emptyfolder_white.prop
+            list/GCclean/GCclean1
+            list/clean_paths.prop list/clean_whitelist.prop list/customize list/zero
+          )
+          for f in "${FILES[@]}"; do
+            if [ -e "$f" ]; then
+              cp --parents "$f" "$STAGE/"
+            else
+              echo "  跳过(缺失): $f"
+            fi
+          done
+          # 目录整体拷贝
+          cp -r META-INF "$STAGE/"
+          [ -d list/backup ] && cp -r list/backup "$STAGE/list/"
+
+          ZIP="CZero_${VER}.zip"
+          ( cd "$STAGE" && zip -qr "../../$ZIP" . )
+          echo "zip=$ZIP" >> "$GITHUB_OUTPUT"
+          ls -lh "$ZIP"
+
+      - name: Collect APK
+        id: apk
+        run: |
+          set -euo pipefail
+          APK=$(ls -1 *.apk 2>/dev/null | head -1 || true)
+          if [ -n "$APK" ]; then
+            echo "找到 APK: $APK"
+            echo "apk=$APK" >> "$GITHUB_OUTPUT"
+          else
+            echo "仓库根目录无 APK，Release 将只含 zip"
+            echo "apk=" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VER: ${{ steps.ver.outputs.version }}
+          ZIP: ${{ steps.pack.outputs.zip }}
+          APK: ${{ steps.apk.outputs.apk }}
+          TITLE: ${{ github.event.inputs.title }}
+          BODY: ${{ github.event.inputs.changelog }}
+          PRE: ${{ github.event.inputs.prerelease }}
+        run: |
+          set -euo pipefail
+          NAME="${TITLE:-$VER}"
+          ARGS=( "$VER" --title "$NAME" --notes "$BODY" --target "$GITHUB_SHA" )
+          [ "$PRE" = "true" ] && ARGS+=( --prerelease )
+
+          ASSETS=( "$ZIP" )
+          [ -n "$APK" ] && ASSETS+=( "$APK" )
+
+          gh release create "${ARGS[@]}" "${ASSETS[@]}" --repo "$GITHUB_REPOSITORY"
+          echo "已发布 Release $VER，资源: ${ASSETS[*]}"
