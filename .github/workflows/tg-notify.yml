@@ -1,0 +1,96 @@
+name: Notify Telegram on Release
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+jobs:
+  telegram-notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p assets
+          gh release download "${{ github.event.release.tag_name }}" \
+            --repo "${{ github.repository }}" \
+            --pattern "*.zip" --pattern "*.apk" \
+            --dir assets || echo "没有匹配的 zip/apk 文件"
+
+      - name: Get commit info
+        id: commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG_NAME: ${{ github.event.release.tag_name }}
+        run: |
+          set -euo pipefail
+          TAG=$(printf '%s' "$TAG_NAME" | jq -sRr @uri)
+          SHA=$(gh api "repos/${{ github.repository }}/commits/$TAG" --jq .sha)
+          DATE=$(gh api "repos/${{ github.repository }}/commits/$TAG" --jq .commit.committer.date)
+          echo "sha=${SHA:0:7}" >> "$GITHUB_OUTPUT"
+          echo "date=$(TZ=Asia/Shanghai date -d "$DATE" '+%Y-%m-%d %H:%M CST')" >> "$GITHUB_OUTPUT"
+
+      - name: Send to Telegram
+        env:
+          BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
+          CHAT_ID: ${{ secrets.TG_CHAT_ID }}
+          VERSION: ${{ github.event.release.tag_name }}
+          COMMIT_HASH: ${{ steps.commit.outputs.sha }}
+          COMMIT_DATE: ${{ steps.commit.outputs.date }}
+          CHANGELOG_TITLE: ${{ github.event.release.name }}
+          CHANGELOG_BODY: ${{ github.event.release.body }}
+          REPOSITORY_URL: https://github.com/${{ github.repository }}
+          DOCS_URL: https://czeropage.top
+        run: |
+          set -euo pipefail
+
+          escape() {
+            sed -e 's/[][\\_*()~`>#+=|{}.!-]/\\&/g' <<< "$1"
+          }
+          escape_code() {
+            sed -e 's/[\\`]/\\&/g' <<< "$1"
+          }
+          escape_url() {
+            sed -e 's/[\\)]/\\&/g' <<< "$1"
+          }
+
+          V=$(escape "$VERSION")
+          H=$(escape "$COMMIT_HASH")
+          D=$(escape "$COMMIT_DATE")
+          T=$(escape "$CHANGELOG_TITLE")
+          B=$(escape_code "$CHANGELOG_BODY")
+          [ -n "$B" ] || B="无详细说明"
+          RU=$(escape_url "$REPOSITORY_URL")
+          DU=$(escape_url "$DOCS_URL")
+
+          TEXT="🚀 *CZero 正式版发布*
+
+          *版本:* $V
+          *提交:* \`$H\`
+          *日期:* $D
+          *更新日志:* $T
+          \`\`\`
+          $B
+          \`\`\`
+
+          [仓库地址]($RU) \| [项目文档]($DU)
+          "
+
+          curl -s --fail-with-body -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
+            -d chat_id="$CHAT_ID" \
+            -d parse_mode="MarkdownV2" \
+            --data-urlencode text="$TEXT" \
+            || { echo "发送消息失败"; exit 1; }
+
+          for f in assets/*; do
+            [ -e "$f" ] || continue
+            curl -s --fail-with-body -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendDocument" \
+              -F chat_id="$CHAT_ID" \
+              -F document=@"$f" \
+              || { echo "发送文件 $f 失败"; exit 1; }
+            sleep 3
+          done
