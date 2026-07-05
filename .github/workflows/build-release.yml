@@ -12,13 +12,18 @@ on:
         required: false
         default: ""
       changelog:
-        description: "更新内容"
+        description: "更新内容（用 \\n 表示换行）"
         required: true
       prerelease:
         description: "标记为预发布 (pre-release)"
         type: boolean
         required: false
         default: false
+      notify:
+        description: "推送到 Telegram 频道"
+        type: boolean
+        required: false
+        default: true
 
 permissions:
   contents: write
@@ -174,7 +179,9 @@ jobs:
         run: |
           set -euo pipefail
           NAME="${TITLE:-$VER}"
-          ARGS=( "$VER" --title "$NAME" --notes "$BODY" --target "$GITHUB_SHA" )
+          # 把输入框里的字面 \n 转成真实换行
+          BODY_REAL="${BODY//\\n/$'\n'}"
+          ARGS=( "$VER" --title "$NAME" --notes "$BODY_REAL" --target "$GITHUB_SHA" )
           [ "$PRE" = "true" ] && ARGS+=( --prerelease )
 
           ASSETS=( "$ZIP" )
@@ -182,3 +189,89 @@ jobs:
 
           gh release create "${ARGS[@]}" "${ASSETS[@]}" --repo "$GITHUB_REPOSITORY"
           echo "已发布 Release $VER，资源: ${ASSETS[*]}"
+
+      - name: Send Telegram notification
+        if: ${{ inputs.notify }}
+        env:
+          BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
+          CHAT_ID: ${{ secrets.TG_CHAT_ID }}
+          VERSION: ${{ steps.ver.outputs.version }}
+          CHANGELOG_TITLE: ${{ github.event.inputs.title }}
+          CHANGELOG_BODY: ${{ github.event.inputs.changelog }}
+          ZIP: ${{ steps.pack.outputs.zip }}
+          APK: ${{ steps.apk.outputs.apk }}
+          REPO: ${{ github.repository }}
+          REPOSITORY_URL: https://github.com/${{ github.repository }}
+          DOCS_URL: https://czeropage.top
+        run: |
+          set -euo pipefail
+
+          escape() {
+            sed -e 's/[][\\_*()~`>#+=|{}.!-]/\\&/g' <<< "$1"
+          }
+          escape_url() {
+            sed -e 's/[\\)]/\\&/g' <<< "$1"
+          }
+
+          # 标题留空时用版本号
+          [ -n "$CHANGELOG_TITLE" ] || CHANGELOG_TITLE="$VERSION"
+          # 把字面 \n 转成真实换行
+          BODY_REAL="${CHANGELOG_BODY//\\n/$'\n'}"
+
+          V=$(escape "$VERSION")
+          H=$(escape "${GITHUB_SHA:0:7}")
+          D=$(escape "$(TZ=Asia/Shanghai date '+%Y-%m-%d %H:%M CST')")
+          T=$(escape "$CHANGELOG_TITLE")
+          RU=$(escape_url "$REPOSITORY_URL")
+          DU=$(escape_url "$DOCS_URL")
+
+          # 自动把正文里的文件路径变成可点击链接
+          LINKIFIED="$BODY_REAL"
+          mapfile -t PATHS < <(grep -oE '[A-Za-z0-9_.-]+(/[A-Za-z0-9_.-]+)+\.[A-Za-z0-9]+' <<< "$BODY_REAL" | sort -u) || true
+
+          i=0
+          for p in "${PATHS[@]}"; do
+            i=$((i+1))
+            placeholder="XLINKPLACEHOLDERX${i}X"
+            LINKIFIED="${LINKIFIED//$p/$placeholder}"
+          done
+
+          B=$(escape "$LINKIFIED")
+          [ -n "$B" ] || B="无详细说明"
+
+          i=0
+          for p in "${PATHS[@]}"; do
+            i=$((i+1))
+            placeholder="XLINKPLACEHOLDERX${i}X"
+            file_url="https://github.com/${REPO}/blob/${VERSION}/${p}"
+            path_escaped=$(escape "$p")
+            url_escaped=$(escape_url "$file_url")
+            B="${B//$placeholder/[${path_escaped}](${url_escaped})}"
+          done
+
+          TEXT="*CZero Build & Release*
+
+          *版本:* $V
+          *提交:* \`$H\`
+          *日期:* $D
+          *更新日志:* $T
+
+          $B
+
+          [仓库地址]($RU) \| [项目文档]($DU)
+          "
+
+          curl -s --fail-with-body -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
+            -d chat_id="$CHAT_ID" \
+            -d parse_mode="MarkdownV2" \
+            --data-urlencode text="$TEXT" \
+            || { echo "发送消息失败"; exit 1; }
+
+          for f in "$ZIP" "$APK"; do
+            [ -n "$f" ] && [ -e "$f" ] || continue
+            curl -s --fail-with-body -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendDocument" \
+              -F chat_id="$CHAT_ID" \
+              -F document=@"$f" \
+              || { echo "发送文件 $f 失败"; exit 1; }
+            sleep 3
+          done
