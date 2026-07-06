@@ -9,9 +9,8 @@
 <p align="center">
   <a href="https://github.com/Xocio/CZero/releases"><img src="https://img.shields.io/github/v/release/Xocio/CZero?label=Release&color=orange" alt="Release"></a>
   <a href="https://czeropage.top/"><img src="https://img.shields.io/badge/%E6%96%87%E6%A1%A3-Docs-blue" alt="Docs"></a>
-  <img src="https://img.shields.io/badge/Android-9%2B-3DDC84?logo=android&logoColor=white" alt="Android 9+">
   <img src="https://img.shields.io/badge/ROOT-Magisk%20%7C%20KernelSU%20%7C%20APatch-red" alt="Root">
-  <a href="LICENSE"><img src="https://img.shields.io/github/license/Xocio/CZero?color=blue" alt="License"></a>
+  <a href="https://t.me/CZeroRelease"><img src="https://img.shields.io/badge/Telegram-频道-26A5E4?logo=telegram&logoColor=white" alt="Telegram Channel"></a>
 </p>
 
 <p align="center"><b>简体中文</b> · <a href="README_en.md">English</a></p>
@@ -21,6 +20,11 @@
 CZero 是一个 Android Root 清理模块，为常见的高频应用提供缓存清理，并涵盖后台压制、空文件夹清理与 F2FS 垃圾回收等功能。
 
 模块本身无常驻服务，由一个轻量 C++ 守护进程按 `config.json` 调度所有任务，配置修改即时生效。日常修改操作通过原生配套应用 **CZeroX** 完成。
+
+## 社区
+
+- **发布频道**：[Release](https://t.me/CZeroRelease) —— 版本更新与公告。
+- **交流群聊**：[Organize](https://t.me/+lwNKCHw_NktjODRh) —— 使用反馈与讨论。
 
 ## 文档
 
@@ -45,11 +49,18 @@ CZero 是一个 Android Root 清理模块，为常见的高频应用提供缓存
 
 ## CZeroX
 
+<table>
+<tr>
+<td valign="top" width="50%">
+
 配套的原生 Jetpack Compose 应用，界面采用 [Miuix](https://compose-miuix-ui.github.io/miuix/) 风格。
 
-<p align="center">
-  <img src="assets/webx.png" width="260" alt="CZeroX 主页">
-</p>
+</td>
+<td align="center" width="50%">
+<img src="assets/webx.png" width="220" alt="CZeroX 主页">
+</td>
+</tr>
+</table>
 
 
 ## Star History
