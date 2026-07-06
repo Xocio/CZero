@@ -74,5 +74,5 @@ The native Jetpack Compose companion app, styled with [Miuix](https://compose-mi
 
 ## License
 
-[Apache License 2.0](LICENSE)
+[GNU General Public License v3.0](LICENSE)
 
