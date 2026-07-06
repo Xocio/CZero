@@ -75,4 +75,4 @@ CZero 是一个 Android Root 清理模块，为常见的高频应用提供缓存
 
 ## 许可证
 
-[Apache License 2.0](LICENSE)
+[GNU General Public License v3.0](LICENSE)
