@@ -67,6 +67,10 @@ export default defineConfig({
             },
           ],
         },
+        footer: {
+          message: '基于 <a href="https://github.com/Xocio/CZero/blob/main/LICENSE" target="_blank" rel="noopener">GPL-3.0</a> 许可发布',
+          copyright: 'Copyright © 2026 Xocio',
+        },
         docFooter: { prev: '上一页', next: '下一页' },
         outline: { label: '本页目录' },
         lastUpdated: { text: '最后更新' },
@@ -121,6 +125,10 @@ export default defineConfig({
               ],
             },
           ],
+        },
+        footer: {
+          message: 'Released under the <a href="https://github.com/Xocio/CZero/blob/main/LICENSE" target="_blank" rel="noopener">GPL-3.0</a> License',
+          copyright: 'Copyright © 2025 Xocio',
         },
       },
     },

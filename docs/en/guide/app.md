@@ -32,6 +32,10 @@ Covers every field in `config.json`: feature switches, schedule intervals and ti
 
 Manage the black/white lists and the custom path list (`clean_paths.prop`) to widen or narrow the cleaning scope.
 
+### Recycle bin
+
+View the recycle sessions produced by cleaning (file count, size, expiry) and restore accidentally deleted files back to their original locations with one tap. The data comes from the `list` / `restore` subcommands of `list/customize`; cleaned files are kept for 7 days by default. See [Features · Recycle bin & restore](/en/guide/features#recycle-bin-restore).
+
 ## Language
 
 CZeroX supports **English** and **简体中文**, following the system or switchable in-app.

@@ -74,6 +74,44 @@ Beyond the built-in rules, you can declare your own paths, swept by the daily jo
 
 These lists can be managed via the CZeroX rule editor and are inherited across reinstalls.
 
+Cleaning does not delete outright — matched files are first moved to the recycle bin (see below), kept for 7 days by default, and fully recoverable during that window.
+
+## Recycle bin & restore
+
+To make accidental deletion recoverable, other / custom-path cleaning **does not truly delete**. Instead it **moves** matched files into a recycle bin, keeping them for a while and only purging them once they expire.
+
+### How it works
+
+- **Move, not delete** — each cleaned file is mirrored into the recycle bin under its original directory structure, so it can be **restored to its exact original location**.
+- **Archived per session** — each cleaning run creates its own session directory named `<timestamp>-<PID>` (e.g. `20060102-150405-12345`), plus a `manifest.json` recording every file's **original path, size, creation time, and expiry time**.
+- **Kept for 7 days** — the retention period is fixed at **7 days** (not adjustable via `config.json`). Expired sessions are purged automatically on the next cleaning run (or manually via `purge`).
+- **No empty directories** — if a run moves nothing, no session directory is left on disk; after a restore completes, its session directory is removed too.
+- **Hidden from the gallery** — a `.nomedia` file is written at the recycle root so moved photos / videos don't show up in the media library.
+- **Preserves mtime** — both move and restore keep each file's original mtime, so restored files aren't misjudged as "new" by the temporal barrier.
+- **Self-protection** — even if a cleaning rule matches `/storage/emulated/0`, the recycle bin itself is never cleaned, avoiding a recursive loop.
+
+The recycle bin lives on internal storage:
+
+```text
+/storage/emulated/0/Recycle/<session>/files/<mirrored original path>
+/storage/emulated/0/Recycle/<session>/manifest.json
+```
+
+### Management commands
+
+The recycle bin is served by the `list/customize` binary through three subcommands, for CZeroX or manual use (all output JSON for easy parsing):
+
+| Command | Purpose |
+|---|---|
+| `customize list` | List all recycle sessions with their manifests (file count, size, expiry) for display |
+| `customize restore <session-id>` | Move all files in the given session back to their original locations |
+| `customize restore all` | Restore every session |
+| `customize purge` | Immediately clear all expired recycle sessions |
+
+::: tip Recoverable even without a manifest
+If the cleaning process was interrupted and `manifest.json` is missing, `list` / restore rebuild the manifest by scanning the session directory on the fly, so restoring still works.
+:::
+
 ## Stats & logging
 
 - **Stats** — per-app cleaning counts and suppression counts are recorded in `basis/basis.prop`; the CZeroX home page shows today's and total figures. The `zero` job resets the day's counters at 00:00.

@@ -40,6 +40,8 @@ list/Emptyfolder/…     # 空文件夹清扫
 log/<YYYY-MM-DD>.log   # 单一每日日志（仅保留当天）
 ```
 
+清理产生的回收站不在模块目录内，而位于内置存储 `/storage/emulated/0/Recycle/`，被清理的文件在此保留 7 天可恢复，详见[功能详解 · 回收站与恢复](/guide/features#回收站与恢复)。
+
 ## 环境要求
 
 - Android 9+（API 28），`arm64-v8a`

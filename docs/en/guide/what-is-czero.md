@@ -40,6 +40,8 @@ list/Emptyfolder/…     # empty-folder sweeper
 log/<YYYY-MM-DD>.log   # single shared daily log (only today's kept)
 ```
 
+The recycle bin produced by cleaning lives outside the module directory, on internal storage at `/storage/emulated/0/Recycle/`, where cleaned files are kept recoverable for 7 days. See [Features · Recycle bin & restore](/en/guide/features#recycle-bin-restore).
+
 ## Requirements
 
 - Android 9+ (API 28), `arm64-v8a`

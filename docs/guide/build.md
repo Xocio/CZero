@@ -76,3 +76,7 @@ go build -o list/customize          list/customize.go
 ## 打包
 
 编译完成后，将所有产物连同脚本、`config.json`、`module.prop`、`META-INF/`、`list/`、`common/` 等按原有目录结构打包为 zip 即可用于刷入。注意保留可执行权限。
+
+## 开源许可
+
+CZero 基于 **GNU General Public License v3.0（GPL-3.0）** 发布，完整条款见仓库根目录的 [LICENSE](https://github.com/Xocio/CZero/blob/main/LICENSE)。这意味着你可以自由使用、修改和再分发源码，但**衍生作品必须同样以 GPL-3.0 开源**并保留版权与许可声明。

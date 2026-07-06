@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"encoding/json"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -26,6 +27,11 @@ const (
 	basisCfg     = moduleBase + "/basis/basis.prop"
 	basisLockCfg = moduleBase + "/basis/.basis.lock"
 	whitelistCfg = moduleBase + "/list/clean_whitelist.prop"
+
+	recycleDir      = "/storage/emulated/0/Recycle"
+	recycleDataDir  = "files"
+	manifestName    = "manifest.json"
+	recycleKeepDays = 7
 )
 
 // 日志
@@ -42,7 +48,7 @@ func newLogger(enabled bool) *logger {
 		return l
 	}
 	_ = os.MkdirAll(logDir, 0755)
-	logFile := logDir + "/" + time.Now().Local().Format("2006-01-02") + ".log" 
+	logFile := logDir + "/" + time.Now().Local().Format("2006-01-02") + ".log"
 	f, err := os.OpenFile(logFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
 	if err != nil {
 		l.enabled = false
@@ -188,7 +194,7 @@ func globDoublestar(pattern string, log *logger) []string {
 	_ = filepath.WalkDir(base, func(path string, d os.DirEntry, err error) error {
 		if err != nil {
 			if os.IsPermission(err) {
-				log.log("⚠️ 权限不足跳过: %s", path)
+				log.log("权限不足跳过: %s", path)
 			}
 			return filepath.SkipDir
 		}
@@ -325,19 +331,337 @@ func (w *whitelist) blocked(path string) bool {
 	return false
 }
 
+// 回收站
+type recycleItem struct {
+	Original string `json:"original"` // 原始绝对路径
+	Size     int64  `json:"size"`
+}
+
+type recycleManifest struct {
+	ID         string        `json:"id"`
+	CreatedAt  int64         `json:"created_at"` // Unix 秒
+	ExpireAt   int64         `json:"expire_at"`  // Unix 秒，超过即可清除
+	TotalBytes int64         `json:"total_bytes"`
+	Items      []recycleItem `json:"items"`
+}
+
+type recycleBin struct {
+	mu       sync.Mutex
+	inited   bool
+	initErr  error
+	session  string // recycleDir/<id>
+	filesDir string // session/files
+	m        recycleManifest
+	log      *logger
+}
+
+func newRecycleBin(log *logger) *recycleBin {
+	return &recycleBin{log: log}
+}
+
+// 会话目录延迟创建，本次运行没有清出任何文件时不留空目录
+func (b *recycleBin) ensureInit() error {
+	if b.inited {
+		return b.initErr
+	}
+	b.inited = true
+
+	id := time.Now().Local().Format("20060102-150405") + "-" + strconv.Itoa(os.Getpid())
+	session := filepath.Join(recycleDir, id)
+	filesDir := filepath.Join(session, recycleDataDir)
+	if err := os.MkdirAll(filesDir, 0755); err != nil {
+		b.initErr = err
+		return err
+	}
+	// 阻止媒体库扫描回收站内容
+	_ = os.WriteFile(filepath.Join(recycleDir, ".nomedia"), nil, 0644)
+
+	now := time.Now()
+	b.session = session
+	b.filesDir = filesDir
+	b.m = recycleManifest{
+		ID:        id,
+		CreatedAt: now.Unix(),
+		ExpireAt:  now.AddDate(0, 0, recycleKeepDays).Unix(),
+	}
+	return nil
+}
+
+// moveToRecycle 把文件移动到回收站内的镜像路径（保留原目录结构，便于原样恢复）
+func (b *recycleBin) moveToRecycle(path string, size int64) error {
+	b.mu.Lock()
+	if err := b.ensureInit(); err != nil {
+		b.mu.Unlock()
+		return err
+	}
+	filesDir := b.filesDir
+	b.mu.Unlock()
+
+	dst := filepath.Join(filesDir, strings.TrimPrefix(path, "/"))
+	if err := os.MkdirAll(filepath.Dir(dst), 0755); err != nil {
+		return err
+	}
+	if err := movePath(path, dst); err != nil {
+		return err
+	}
+
+	b.mu.Lock()
+	b.m.Items = append(b.m.Items, recycleItem{Original: path, Size: size})
+	b.m.TotalBytes += size
+	b.mu.Unlock()
+	return nil
+}
+
+func (b *recycleBin) saveManifest() {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+	if b.session == "" {
+		return
+	}
+	if len(b.m.Items) == 0 {
+		// 没有实际移动任何文件，回收会话目录
+		_ = os.RemoveAll(b.session)
+		return
+	}
+	data, err := json.MarshalIndent(b.m, "", "  ")
+	if err != nil {
+		return
+	}
+	if err := os.WriteFile(filepath.Join(b.session, manifestName), data, 0644); err != nil {
+		b.log.log("写入回收站清单失败: %s → %v", b.session, err)
+	}
+}
+
+// movePath 移动单个文件/符号链接：优先 rename，跨文件系统回退为复制后删源（等效移动）
+func movePath(src, dst string) error {
+	if err := os.Rename(src, dst); err == nil {
+		return nil
+	}
+	fi, err := os.Lstat(src)
+	if err != nil {
+		return err
+	}
+	if fi.Mode()&os.ModeSymlink != 0 {
+		target, err := os.Readlink(src)
+		if err != nil {
+			return err
+		}
+		_ = os.Remove(dst)
+		if err := os.Symlink(target, dst); err != nil {
+			return err
+		}
+		return os.Remove(src)
+	}
+	if fi.IsDir() {
+		return fmt.Errorf("跨文件系统移动目录不受支持: %s", src)
+	}
+
+	in, err := os.Open(src)
+	if err != nil {
+		return err
+	}
+	defer in.Close()
+
+	out, err := os.OpenFile(dst, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, fi.Mode().Perm())
+	if err != nil {
+		return err
+	}
+	if _, err := io.Copy(out, in); err != nil {
+		_ = out.Close()
+		_ = os.Remove(dst)
+		return err
+	}
+	if err := out.Close(); err != nil {
+		_ = os.Remove(dst)
+		return err
+	}
+	// 保留修改时间，避免恢复后时序屏障判断失真
+	_ = os.Chtimes(dst, fi.ModTime(), fi.ModTime())
+	return os.Remove(src)
+}
+
+// purgeExpired 清除超过保留期的回收会话
+func purgeExpired(log *logger) {
+	entries, err := os.ReadDir(recycleDir)
+	if err != nil {
+		return
+	}
+	now := time.Now().Unix()
+	for _, e := range entries {
+		if !e.IsDir() {
+			continue
+		}
+		session := filepath.Join(recycleDir, e.Name())
+		expireAt := int64(0)
+		if m, err := loadManifest(session); err == nil {
+			expireAt = m.ExpireAt
+		} else if fi, err := e.Info(); err == nil {
+			// 清单缺失时按目录时间兜底
+			expireAt = fi.ModTime().AddDate(0, 0, recycleKeepDays).Unix()
+		} else {
+			continue
+		}
+		if now < expireAt {
+			continue
+		}
+		if err := os.RemoveAll(session); err != nil {
+			log.log("清除过期回收会话失败: %s → %v", session, err)
+		} else {
+			log.log("已清除过期回收会话: %s", e.Name())
+		}
+	}
+}
+
+func loadManifest(session string) (recycleManifest, error) {
+	var m recycleManifest
+	data, err := os.ReadFile(filepath.Join(session, manifestName))
+	if err != nil {
+		return m, err
+	}
+	if err := json.Unmarshal(data, &m); err != nil {
+		return m, err
+	}
+	return m, nil
+}
+
+// restoreSession 把一个回收会话内的所有文件原样移回原始位置
+func restoreSession(session string, log *logger) (restored, failed int) {
+	filesDir := filepath.Join(session, recycleDataDir)
+	_ = filepath.WalkDir(filesDir, func(path string, d os.DirEntry, err error) error {
+		if err != nil || d.IsDir() {
+			return nil
+		}
+		rel, err := filepath.Rel(filesDir, path)
+		if err != nil {
+			failed++
+			return nil
+		}
+		orig := "/" + filepath.ToSlash(rel)
+		if err := os.MkdirAll(filepath.Dir(orig), 0755); err != nil {
+			log.log("恢复失败(建目录): %s → %v", orig, err)
+			failed++
+			return nil
+		}
+		if err := movePath(path, orig); err != nil {
+			log.log("恢复失败: %s → %v", orig, err)
+			failed++
+			return nil
+		}
+		restored++
+		return nil
+	})
+	if failed == 0 {
+		_ = os.RemoveAll(session)
+	}
+	return restored, failed
+}
+
+// runRestore 处理 restore 子命令，target 为会话 ID 或 "all"，结果以 JSON 输出到 stdout 供 app 读取
+func runRestore(target string, log *logger) {
+	var sessions []string
+	if target == "all" {
+		if entries, err := os.ReadDir(recycleDir); err == nil {
+			for _, e := range entries {
+				if e.IsDir() {
+					sessions = append(sessions, filepath.Join(recycleDir, e.Name()))
+				}
+			}
+		}
+	} else {
+		session := filepath.Join(recycleDir, filepath.Base(target))
+		if fi, err := os.Stat(session); err != nil || !fi.IsDir() {
+			fmt.Printf(`{"ok":false,"error":"session not found: %s"}`+"\n", target)
+			return
+		}
+		sessions = append(sessions, session)
+	}
+
+	totalRestored, totalFailed := 0, 0
+	for _, s := range sessions {
+		r, f := restoreSession(s, log)
+		totalRestored += r
+		totalFailed += f
+		log.log("恢复回收会话 %s: 成功 %d, 失败 %d", filepath.Base(s), r, f)
+	}
+	fmt.Printf(`{"ok":%t,"restored":%d,"failed":%d}`+"\n", totalFailed == 0, totalRestored, totalFailed)
+}
+
+// sessionSummary 读取会话清单；清单缺失（清理进程被中断等）时扫描 files 目录现场合成，
+// 并写回磁盘补全，保证后续 list/purge 行为一致。会话内无文件时返回 false（无展示价值，留给 purge 收尾）
+func sessionSummary(session string) (recycleManifest, bool) {
+	if m, err := loadManifest(session); err == nil {
+		return m, true
+	}
+
+	fi, err := os.Stat(session)
+	if err != nil {
+		return recycleManifest{}, false
+	}
+	m := recycleManifest{
+		ID:        filepath.Base(session),
+		CreatedAt: fi.ModTime().Unix(),
+		ExpireAt:  fi.ModTime().AddDate(0, 0, recycleKeepDays).Unix(),
+	}
+
+	filesDir := filepath.Join(session, recycleDataDir)
+	_ = filepath.WalkDir(filesDir, func(path string, d os.DirEntry, err error) error {
+		if err != nil || d.IsDir() {
+			return nil
+		}
+		info, e := d.Info()
+		if e != nil {
+			return nil
+		}
+		rel, e := filepath.Rel(filesDir, path)
+		if e != nil {
+			return nil
+		}
+		m.Items = append(m.Items, recycleItem{Original: "/" + filepath.ToSlash(rel), Size: info.Size()})
+		m.TotalBytes += info.Size()
+		return nil
+	})
+	if len(m.Items) == 0 {
+		return recycleManifest{}, false
+	}
+
+	if data, err := json.MarshalIndent(m, "", "  "); err == nil {
+		_ = os.WriteFile(filepath.Join(session, manifestName), data, 0644)
+	}
+	return m, true
+}
+
+// runList 输出所有回收会话的清单 JSON 数组，供 app 展示
+func runList() {
+	list := []recycleManifest{}
+	if entries, err := os.ReadDir(recycleDir); err == nil {
+		for _, e := range entries {
+			if !e.IsDir() {
+				continue
+			}
+			if m, ok := sessionSummary(filepath.Join(recycleDir, e.Name())); ok {
+				list = append(list, m)
+			}
+		}
+	}
+	data, _ := json.Marshal(list)
+	fmt.Println(string(data))
+}
+
 // 清理
 type cleaner struct {
 	barrierDays int
 	cutoff      time.Time
 	wl          *whitelist
+	bin         *recycleBin
 	log         *logger
 	totalBytes  atomic.Int64
 }
 
-func newCleaner(barrierDays int, wl *whitelist, log *logger) *cleaner {
+func newCleaner(barrierDays int, wl *whitelist, bin *recycleBin, log *logger) *cleaner {
 	c := &cleaner{
 		barrierDays: barrierDays,
 		wl:          wl,
+		bin:         bin,
 		log:         log,
 	}
 	if barrierDays > 0 {
@@ -364,8 +688,8 @@ func (c *cleaner) cleanSingleFile(path string) int64 {
 		return 0
 	}
 	size := st.Size
-	if err := os.Remove(path); err != nil {
-		c.log.log("删除文件失败: %s → %v", path, err)
+	if err := c.bin.moveToRecycle(path, size); err != nil {
+		c.log.log("移入回收站失败: %s → %v", path, err)
 		return 0
 	}
 	return size
@@ -380,6 +704,10 @@ func (c *cleaner) cleanDir(dirPath string) int64 {
 			if os.IsPermission(err) {
 				c.log.log("权限不足跳过: %s", path)
 			}
+			return filepath.SkipDir
+		}
+		// 回收站自身永不清理，防止规则匹配到 /storage/emulated/0 时套娃
+		if path == recycleDir {
 			return filepath.SkipDir
 		}
 		// 白名单保护子路径
@@ -403,10 +731,10 @@ func (c *cleaner) cleanDir(dirPath string) int64 {
 			return nil
 		}
 
-		if err := os.Remove(path); err == nil {
+		if err := c.bin.moveToRecycle(path, st.Size); err == nil {
 			cleaned += st.Size
 		} else {
-			c.log.log("删除失败: %s → %v", path, err)
+			c.log.log("移入回收站失败: %s → %v", path, err)
 		}
 		return nil
 	})
@@ -455,6 +783,10 @@ func (c *cleaner) run(patterns []string) int64 {
 	// 顶层白名单过滤
 	var targets []string
 	for _, p := range allPaths {
+		if p == recycleDir || strings.HasPrefix(p, recycleDir+"/") {
+			c.log.log("跳过回收站自身: %s", p)
+			continue
+		}
 		if c.wl.blocked(p) {
 			c.log.log("白名单跳过: %s", p)
 			continue
@@ -579,6 +911,26 @@ func main() {
 	log := newLogger(cfg.General.Log)
 	defer log.close()
 
+	if len(os.Args) > 1 {
+		switch os.Args[1] {
+		case "restore":
+			if len(os.Args) < 3 {
+				fmt.Println(`{"ok":false,"error":"usage: restore <session-id|all>"}`)
+				return
+			}
+			runRestore(os.Args[2], log)
+			log.flush()
+			return
+		case "list":
+			runList()
+			return
+		case "purge":
+			purgeExpired(log)
+			log.flush()
+			return
+		}
+	}
+
 	log.log("开始其他缓存清理 (GOMAXPROCS=%d)", procs)
 
 	barrierDays := cfg.General.TemporalBarrierDays
@@ -606,8 +958,16 @@ func main() {
 	}
 	log.log("共加载清理规则: %d 条", len(patterns))
 
-	c := newCleaner(barrierDays, wl, log)
+	// 清除超过保留期的历史回收会话
+	purgeExpired(log)
+
+	bin := newRecycleBin(log)
+	c := newCleaner(barrierDays, wl, bin, log)
 	totalBytes := c.run(patterns)
+	bin.saveManifest()
+	if n := len(bin.m.Items); n > 0 {
+		log.log("已移入回收站: %d 个文件 → %s (保留 %d 天)", n, bin.session, recycleKeepDays)
+	}
 
 	mb := totalBytes / (1024 * 1024)
 	if mb > 0 {

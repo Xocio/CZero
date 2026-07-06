@@ -30,7 +30,16 @@ With `general.log` on, logs are at `/data/adb/modules/CZero/log/<YYYY-MM-DD>.log
 
 ## Could cleaning delete my data?
 
-Cleaning targets only caches and leftover directories, protected by `temporal_barrier_days` (the temporal barrier) — only files older than N days are touched. For a more conservative setup, raise that value or narrow the cleaning scope.
+Cleaning targets only caches and leftover directories, with two layers of protection:
+
+- **Temporal barrier** — governed by `temporal_barrier_days`, only files older than N days are touched; for a more conservative setup, raise that value or narrow the scope.
+- **Recycle bin** — other / custom-path cleaning **does not truly delete**. Files are first moved to the recycle bin and kept for **7 days** by default, fully recoverable to their original location during that window. So even an accidental removal can be undone. See [Features · Recycle bin & restore](/en/guide/features#recycle-bin-restore).
+
+## I deleted a file by mistake — how do I restore it?
+
+Cleaned files stay in the recycle bin for 7 days. View and restore them in CZeroX.
+
+Restoring moves files back to their original paths as-is (preserving their original mtime). Sessions older than 7 days are purged automatically and can no longer be restored.
 
 ## Where do I report issues?
 

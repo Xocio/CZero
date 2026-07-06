@@ -76,3 +76,7 @@ Several C++ files depend on shared headers under `common/`, which is why every c
 ## Packaging
 
 Once compiled, package all outputs together with the scripts, `config.json`, `module.prop`, `META-INF/`, `list/`, `common/`, etc., preserving the original directory layout and executable permissions, into a zip ready to flash.
+
+## License
+
+CZero is released under the **GNU General Public License v3.0 (GPL-3.0)**; the full terms are in [LICENSE](https://github.com/Xocio/CZero/blob/main/LICENSE) at the repo root. You are free to use, modify, and redistribute the source, but **derivative works must also be open-sourced under GPL-3.0** and retain the copyright and license notices.
