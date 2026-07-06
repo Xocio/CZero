@@ -9,9 +9,8 @@
 <p align="center">
   <a href="https://github.com/Xocio/CZero/releases"><img src="https://img.shields.io/github/v/release/Xocio/CZero?label=release&color=orange" alt="release"></a>
   <a href="https://czeropage.top/en/"><img src="https://img.shields.io/badge/docs-website-blue" alt="docs"></a>
-  <img src="https://img.shields.io/badge/Android-9%2B-3DDC84?logo=android&logoColor=white" alt="Android 9+">
   <img src="https://img.shields.io/badge/root-Magisk%20%7C%20KernelSU%20%7C%20APatch-red" alt="root">
-  <a href="LICENSE"><img src="https://img.shields.io/github/license/Xocio/CZero?color=blue" alt="license"></a>
+  <a href="https://t.me/CZeroRelease"><img src="https://img.shields.io/badge/Telegram-Channel-26A5E4?logo=telegram&logoColor=white" alt="Telegram Channel"></a>
 </p>
 
 <p align="center"><a href="README.md">简体中文</a> · <b>English</b></p>
@@ -21,6 +20,11 @@
 CZero is an Android root module that cleans the cache of frequently used apps, and adds background suppression, empty-folder cleanup, and F2FS garbage collection.
 
 The module has no resident service — a lightweight C++ daemon schedules every task according to `config.json`, and configuration changes take effect immediately. Day-to-day operation goes through the native companion app **CZeroX**.
+
+## Community
+
+- **Release channel**: [Release](https://t.me/CZeroRelease) — updates and announcements.
+- **Chat group**: [Organize](https://t.me/+lwNKCHw_NktjODRh) — feedback and discussion.
 
 ## Documentation
 
@@ -45,11 +49,18 @@ The module has no resident service — a lightweight C++ daemon schedules every 
 
 ## CZeroX
 
+<table>
+<tr>
+<td valign="top" width="50%">
+
 The native Jetpack Compose companion app, styled with [Miuix](https://compose-miuix-ui.github.io/miuix/).
 
-<p align="center">
-  <img src="assets/webx.png" width="260" alt="CZeroX home">
-</p>
+</td>
+<td align="center" width="50%">
+<img src="assets/webx.png" width="220" alt="CZeroX home">
+</td>
+</tr>
+</table>
 
 ## Star History
 
@@ -64,3 +75,4 @@ The native Jetpack Compose companion app, styled with [Miuix](https://compose-mi
 ## License
 
 [Apache License 2.0](LICENSE)
+
