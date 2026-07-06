@@ -145,7 +145,6 @@ jobs:
               echo "  跳过(缺失): $f"
             fi
           done
-          # 目录整体拷贝
           cp -r META-INF "$STAGE/"
           [ -d list/backup ] && cp -r list/backup "$STAGE/list/"
 
@@ -179,7 +178,6 @@ jobs:
         run: |
           set -euo pipefail
           NAME="${TITLE:-$VER}"
-          # 把输入框里的字面 \n 转成真实换行
           BODY_REAL="${BODY//\\n/$'\n'}"
           ARGS=( "$VER" --title "$NAME" --notes "$BODY_REAL" --target "$GITHUB_SHA" )
           [ "$PRE" = "true" ] && ARGS+=( --prerelease )
@@ -190,88 +188,122 @@ jobs:
           gh release create "${ARGS[@]}" "${ASSETS[@]}" --repo "$GITHUB_REPOSITORY"
           echo "已发布 Release $VER，资源: ${ASSETS[*]}"
 
-      - name: Send Telegram notification
+      - name: Prepare Telegram Message
         if: ${{ inputs.notify }}
+        id: telegram_message
         env:
-          BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
-          CHAT_ID: ${{ secrets.TG_CHAT_ID }}
-          VERSION: ${{ steps.ver.outputs.version }}
-          CHANGELOG_TITLE: ${{ github.event.inputs.title }}
           CHANGELOG_BODY: ${{ github.event.inputs.changelog }}
-          ZIP: ${{ steps.pack.outputs.zip }}
-          APK: ${{ steps.apk.outputs.apk }}
-          REPO: ${{ github.repository }}
-          REPOSITORY_URL: https://github.com/${{ github.repository }}
-          DOCS_URL: https://czeropage.top
+        run: |
+          set -euo pipefail
+          BODY_REAL="${CHANGELOG_BODY//\\n/$'\n'}"
+
+          escape_md_v2_code() {
+            perl -pe 's/([`\\])/\\$1/g'
+          }
+
+          CHANGELOG_ESCAPED=$(printf "%s" "$BODY_REAL" | escape_md_v2_code)
+
+          {
+            echo 'changelog_body<<EOF'
+            echo "$CHANGELOG_ESCAPED"
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Download Release Asset
+        if: ${{ inputs.notify }}
+        id: download_asset
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          TAG_NAME: ${{ steps.ver.outputs.version }}
         run: |
           set -euo pipefail
 
-          escape() {
-            sed -e 's/[][\\_*()~`>#+=|{}.!-]/\\&/g' <<< "$1"
+          RELEASE_INFO=$(curl -sS -H "Authorization: Bearer $GITHUB_TOKEN" \
+            "https://api.github.com/repos/${{ github.repository }}/releases/tags/$TAG_NAME")
+
+          ZIP_URL=$(echo "$RELEASE_INFO" | jq -r '.assets[] | select(.name | endswith(".zip")) | .browser_download_url' | head -n 1)
+          ZIP_NAME=$(echo "$RELEASE_INFO" | jq -r '.assets[] | select(.name | endswith(".zip")) | .name' | head -n 1)
+          APK_URL=$(echo "$RELEASE_INFO" | jq -r '.assets[] | select(.name | endswith(".apk")) | .browser_download_url' | head -n 1)
+          APK_NAME=$(echo "$RELEASE_INFO" | jq -r '.assets[] | select(.name | endswith(".apk")) | .name' | head -n 1)
+
+          if [ -z "$ZIP_URL" ] || [ "$ZIP_URL" = "null" ]; then
+            echo "Release asset not found for tag: $TAG_NAME"
+            exit 1
+          fi
+
+          curl -sS -f -L --retry 3 --retry-delay 2 -o "$ZIP_NAME" "$ZIP_URL"
+          [ -s "$ZIP_NAME" ] || { echo "下载的 zip 是空的"; exit 1; }
+          echo "zip_name=$ZIP_NAME" >> "$GITHUB_OUTPUT"
+
+          if [ -n "$APK_URL" ] && [ "$APK_URL" != "null" ]; then
+            curl -sS -f -L --retry 3 --retry-delay 2 -o "$APK_NAME" "$APK_URL"
+            [ -s "$APK_NAME" ] || { echo "下载的 apk 是空的"; exit 1; }
+            echo "apk_name=$APK_NAME" >> "$GITHUB_OUTPUT"
+          else
+            echo "apk_name=" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Send to Telegram
+        if: ${{ inputs.notify }}
+        env:
+          TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
+          TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
+          VERSION: ${{ steps.ver.outputs.version }}
+          COMMIT_HASH_RAW: ${{ github.sha }}
+          CHANGELOG_BODY: ${{ steps.telegram_message.outputs.changelog_body }}
+          REPOSITORY_URL: https://github.com/${{ github.repository }}
+          DOCS_URL: https://czeropage.top
+          ZIP_NAME: ${{ steps.download_asset.outputs.zip_name }}
+        run: |
+          set -euo pipefail
+
+          escape_md_v2() {
+            perl -pe 's/([_*\[\]()~`>#+\-=|{}.!\\])/\\$1/g'
           }
-          escape_url() {
-            sed -e 's/[\\)]/\\&/g' <<< "$1"
+          escape_md_v2_code() {
+            perl -pe 's/([`\\])/\\$1/g'
+          }
+          escape_md_v2_url() {
+            perl -pe 's/([)\\])/\\$1/g'
           }
 
-          # 标题留空时用版本号
-          [ -n "$CHANGELOG_TITLE" ] || CHANGELOG_TITLE="$VERSION"
-          # 把字面 \n 转成真实换行
-          BODY_REAL="${CHANGELOG_BODY//\\n/$'\n'}"
+          COMMIT_HASH="${COMMIT_HASH_RAW:0:7}"
+          COMMIT_DATE=$(TZ=Asia/Shanghai date '+%Y-%m-%d %H:%M CST')
 
-          V=$(escape "$VERSION")
-          H=$(escape "${GITHUB_SHA:0:7}")
-          D=$(escape "$(TZ=Asia/Shanghai date '+%Y-%m-%d %H:%M CST')")
-          T=$(escape "$CHANGELOG_TITLE")
-          RU=$(escape_url "$REPOSITORY_URL")
-          DU=$(escape_url "$DOCS_URL")
+          VERSION_ESCAPED=$(printf "%s" "$VERSION" | escape_md_v2)
+          COMMIT_HASH_ESCAPED=$(printf "%s" "$COMMIT_HASH" | escape_md_v2_code)
+          COMMIT_DATE_ESCAPED=$(printf "%s" "$COMMIT_DATE" | escape_md_v2)
+          REPOSITORY_URL_ESCAPED=$(printf "%s" "$REPOSITORY_URL" | escape_md_v2_url)
+          DOCS_URL_ESCAPED=$(printf "%s" "$DOCS_URL" | escape_md_v2_url)
 
-          # 自动把正文里的文件路径变成可点击链接
-          LINKIFIED="$BODY_REAL"
-          mapfile -t PATHS < <(grep -oE '[A-Za-z0-9_.-]+(/[A-Za-z0-9_.-]+)+\.[A-Za-z0-9]+' <<< "$BODY_REAL" | sort -u) || true
+          MESSAGE=$(cat <<EOF
+          *CZero Build & Release*
 
-          i=0
-          for p in "${PATHS[@]}"; do
-            i=$((i+1))
-            placeholder="XLINKPLACEHOLDERX${i}X"
-            LINKIFIED="${LINKIFIED//$p/$placeholder}"
-          done
+          *版本:* $VERSION_ESCAPED
+          *提交:* \`$COMMIT_HASH_ESCAPED\`
+          *日期:* $COMMIT_DATE_ESCAPED
+          \`\`\`
+          $CHANGELOG_BODY
+          \`\`\`
 
-          B=$(escape "$LINKIFIED")
-          [ -n "$B" ] || B="无详细说明"
+          [仓库地址]($REPOSITORY_URL_ESCAPED) \| [项目文档]($DOCS_URL_ESCAPED)
+          EOF
+          )
 
-          i=0
-          for p in "${PATHS[@]}"; do
-            i=$((i+1))
-            placeholder="XLINKPLACEHOLDERX${i}X"
-            file_url="https://github.com/${REPO}/blob/${VERSION}/${p}"
-            path_escaped=$(escape "$p")
-            url_escaped=$(escape_url "$file_url")
-            B="${B//$placeholder/[${path_escaped}](${url_escaped})}"
-          done
+          curl -sS -f -F "document=@${ZIP_NAME}" \
+            --form-string "chat_id=$TG_CHAT_ID" \
+            --form-string "caption=$MESSAGE" \
+            --form-string "parse_mode=MarkdownV2" \
+            "https://api.telegram.org/bot$TG_BOT_TOKEN/sendDocument"
 
-          TEXT="*CZero Build & Release*
-
-          *版本:* $V
-          *提交:* \`$H\`
-          *日期:* $D
-          *更新日志:* $T
-
-          $B
-
-          [仓库地址]($RU) \| [项目文档]($DU)
-          "
-
-          curl -s --fail-with-body -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
-            -d chat_id="$CHAT_ID" \
-            -d parse_mode="MarkdownV2" \
-            --data-urlencode text="$TEXT" \
-            || { echo "发送消息失败"; exit 1; }
-
-          for f in "$ZIP" "$APK"; do
-            [ -n "$f" ] && [ -e "$f" ] || continue
-            curl -s --fail-with-body -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendDocument" \
-              -F chat_id="$CHAT_ID" \
-              -F document=@"$f" \
-              || { echo "发送文件 $f 失败"; exit 1; }
-            sleep 3
-          done
+      - name: Send APK to Telegram
+        if: ${{ inputs.notify && steps.download_asset.outputs.apk_name != '' }}
+        env:
+          TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
+          TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
+          APK_NAME: ${{ steps.download_asset.outputs.apk_name }}
+        run: |
+          set -euo pipefail
+          curl -sS -f -F "document=@${APK_NAME}" \
+            --form-string "chat_id=$TG_CHAT_ID" \
+            "https://api.telegram.org/bot$TG_BOT_TOKEN/sendDocument"
