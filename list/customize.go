@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -17,6 +18,8 @@ import (
 	"time"
 )
 
+var errAlreadyGone = errors.New("source already gone")
+
 // 路径常量
 const (
 	moduleBase   = "/data/adb/modules/CZero"
@@ -27,6 +30,7 @@ const (
 	basisCfg     = moduleBase + "/basis/basis.prop"
 	basisLockCfg = moduleBase + "/basis/.basis.lock"
 	whitelistCfg = moduleBase + "/list/clean_whitelist.prop"
+	appRulesCfg  = moduleBase + "/list/app.json"
 
 	recycleDir      = "/storage/emulated/0/Recycle"
 	recycleDataDir  = "files"
@@ -151,6 +155,45 @@ func loadLines(path string) []string {
 		line := strings.TrimSpace(sc.Text())
 		if line != "" && line[0] != '#' {
 			out = append(out, line)
+		}
+	}
+	return out
+}
+
+// app.json App
+type appRule struct {
+	Package string   `json:"package"`
+	Name    string   `json:"name"`
+	Enabled bool     `json:"enabled"`
+	Paths   []string `json:"paths"`
+}
+
+type appRulesFile struct {
+	Version int       `json:"version"`
+	Apps    []appRule `json:"apps"`
+}
+
+func loadAppRules(log *logger) []string {
+	data, err := os.ReadFile(appRulesCfg)
+	if err != nil {
+		return nil
+	}
+	var f appRulesFile
+	if err := json.Unmarshal(data, &f); err != nil {
+		log.log("app.json 解析失败: %v", err)
+		return nil
+	}
+	var out []string
+	for _, a := range f.Apps {
+		if !a.Enabled {
+			log.log("app.json 跳过已停用应用: %s", a.Package)
+			continue
+		}
+		for _, p := range a.Paths {
+			// 只接受绝对路径，防御手改出相对路径误清工作目录
+			if strings.HasPrefix(p, "/") {
+				out = append(out, p)
+			}
 		}
 	}
 	return out
@@ -387,7 +430,7 @@ func (b *recycleBin) ensureInit() error {
 	return nil
 }
 
-// moveToRecycle 把文件移动到回收站内的镜像路径（保留原目录结构，便于原样恢复）
+// moveToRecycle 把文件移动到回收站内的镜像路径
 func (b *recycleBin) moveToRecycle(path string, size int64) error {
 	b.mu.Lock()
 	if err := b.ensureInit(); err != nil {
@@ -432,25 +475,37 @@ func (b *recycleBin) saveManifest() {
 	}
 }
 
-// movePath 移动单个文件/符号链接：优先 rename，跨文件系统回退为复制后删源（等效移动）
+// movePath 移动单个文件，优先 rename，跨文件系统回退为复制后删源
 func movePath(src, dst string) error {
 	if err := os.Rename(src, dst); err == nil {
 		return nil
+	} else if os.IsNotExist(err) {
+		return errAlreadyGone
 	}
+
 	fi, err := os.Lstat(src)
 	if err != nil {
+		if os.IsNotExist(err) {
+			return errAlreadyGone
+		}
 		return err
 	}
 	if fi.Mode()&os.ModeSymlink != 0 {
 		target, err := os.Readlink(src)
 		if err != nil {
+			if os.IsNotExist(err) {
+				return errAlreadyGone
+			}
 			return err
 		}
 		_ = os.Remove(dst)
 		if err := os.Symlink(target, dst); err != nil {
 			return err
 		}
-		return os.Remove(src)
+		if err := os.Remove(src); err != nil && !os.IsNotExist(err) {
+			return err
+		}
+		return nil
 	}
 	if fi.IsDir() {
 		return fmt.Errorf("跨文件系统移动目录不受支持: %s", src)
@@ -458,6 +513,9 @@ func movePath(src, dst string) error {
 
 	in, err := os.Open(src)
 	if err != nil {
+		if os.IsNotExist(err) {
+			return errAlreadyGone
+		}
 		return err
 	}
 	defer in.Close()
@@ -477,7 +535,11 @@ func movePath(src, dst string) error {
 	}
 	// 保留修改时间，避免恢复后时序屏障判断失真
 	_ = os.Chtimes(dst, fi.ModTime(), fi.ModTime())
-	return os.Remove(src)
+	// 拷贝已完成，源文件此时才消失不影响结果
+	if err := os.Remove(src); err != nil && !os.IsNotExist(err) {
+		return err
+	}
+	return nil
 }
 
 // purgeExpired 清除超过保留期的回收会话
@@ -586,8 +648,7 @@ func runRestore(target string, log *logger) {
 	fmt.Printf(`{"ok":%t,"restored":%d,"failed":%d}`+"\n", totalFailed == 0, totalRestored, totalFailed)
 }
 
-// sessionSummary 读取会话清单；清单缺失（清理进程被中断等）时扫描 files 目录现场合成，
-// 并写回磁盘补全，保证后续 list/purge 行为一致。会话内无文件时返回 false（无展示价值，留给 purge 收尾）
+// sessionSummary 读取会话清单；清单缺失（清理进程被中断等）时扫描 files 目录现场合成，并写回磁盘补全，保证后续 list/purge 行为一致。会话内无文件时返回 false
 func sessionSummary(session string) (recycleManifest, bool) {
 	if m, err := loadManifest(session); err == nil {
 		return m, true
@@ -689,7 +750,9 @@ func (c *cleaner) cleanSingleFile(path string) int64 {
 	}
 	size := st.Size
 	if err := c.bin.moveToRecycle(path, size); err != nil {
-		c.log.log("移入回收站失败: %s → %v", path, err)
+		if !errors.Is(err, errAlreadyGone) {
+			c.log.log("移入回收站失败: %s → %v", path, err)
+		}
 		return 0
 	}
 	return size
@@ -733,7 +796,7 @@ func (c *cleaner) cleanDir(dirPath string) int64 {
 
 		if err := c.bin.moveToRecycle(path, st.Size); err == nil {
 			cleaned += st.Size
-		} else {
+		} else if !errors.Is(err, errAlreadyGone) {
 			c.log.log("移入回收站失败: %s → %v", path, err)
 		}
 		return nil
@@ -952,11 +1015,17 @@ func main() {
 	log.log("共加载白名单路径: %d 个", len(wlLines))
 
 	patterns := loadLines(pathsCfg)
+	log.log("共加载清理规则: %d 条", len(patterns))
+
+	// app.json
+	if appPatterns := loadAppRules(log); len(appPatterns) > 0 {
+		log.log("共加载应用缓存规则(app.json): %d 条", len(appPatterns))
+		patterns = append(patterns, appPatterns...)
+	}
 	if len(patterns) == 0 {
 		log.log("清理路径文件为空或不存在")
 		return
 	}
-	log.log("共加载清理规则: %d 条", len(patterns))
 
 	// 清除超过保留期的历史回收会话
 	purgeExpired(log)

@@ -111,7 +111,8 @@ if handle_choice "$L_AGREE" "$L_CANCEL"; then
             "list/Emptyfolder/directories.prop" \
             "list/Emptyfolder/emptyfolder_white.prop" \
             "list/clean_whitelist.prop" \
-            "list/clean_paths.prop"; do
+            "list/clean_paths.prop" \
+            "list/app.json"; do
             [ -f "$OLD/$rel" ] && mv -f "$OLD/$rel" "$MODPATH/$rel"
         done
     else
