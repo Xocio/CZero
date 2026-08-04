@@ -1,0 +1,287 @@
+/* 缩小首页 hero 大 LOGO */
+.VPHero .VPImage.image-src {
+  max-width: 180px;
+  max-height: 180px;
+}
+
+@media (min-width: 960px) {
+  .VPHero .VPImage.image-src {
+    max-width: 220px;
+    max-height: 220px;
+  }
+}
+
+/* ── 下载落地页 /download-home ─────────────────────────── */
+
+.dl-wrap {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 80px 24px 96px;
+}
+
+.dl-head {
+  text-align: center;
+  margin-bottom: 44px;
+}
+
+.dl-logo {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 18px;
+  display: block;
+}
+
+.dl-title {
+  margin: 0;
+  font-size: 34px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -.3px;
+}
+
+.dl-sub {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 12px 0 0;
+  font-size: 15px;
+  color: var(--vp-c-text-2);
+}
+
+/* 校验值列表（/download 页） */
+.dl-sums {
+  margin: 0 0 16px;
+}
+
+.dl-sum {
+  padding: 10px 0;
+}
+
+.dl-sum + .dl-sum {
+  border-top: 1px solid var(--vp-c-divider);
+}
+
+.dl-sum span {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--vp-c-text-1);
+}
+
+.dl-sum code {
+  display: block;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--vp-c-text-2);
+  word-break: break-all;
+}
+
+/* 版本号 */
+.dl-ver {
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.6;
+  color: var(--vp-c-brand-1);
+  background: var(--vp-c-brand-soft);
+}
+
+/* 顶部提示：两者配套 */
+.dl-note {
+  margin: 0 0 18px;
+  padding: 10px 18px;
+  border-radius: 10px;
+  text-align: center;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--vp-c-brand-1);
+  background: var(--vp-c-brand-soft);
+}
+
+.dl-card {
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 16px;
+  background: var(--vp-c-bg-soft);
+  text-decoration: none !important;
+  color: inherit;
+  transition: border-color .2s, transform .2s;
+}
+
+.dl-card:hover {
+  border-color: var(--vp-c-brand-1);
+  transform: translateY(-2px);
+}
+
+/* 唯一主卡片：模块下载，居中收窄，不占满整行 */
+.dl-card-main {
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+/* 已下载：整卡收敛 */
+.dl-card.is-done {
+  background: var(--vp-c-bg);
+}
+
+.dl-card.is-done .dl-btn-brand {
+  background: transparent;
+  border-color: var(--vp-c-divider);
+  color: var(--vp-c-text-3);
+}
+
+.dl-card.is-done:hover .dl-btn-brand {
+  border-color: var(--vp-c-brand-1);
+  color: var(--vp-c-brand-1);
+}
+
+/* 应用备用下载：低调文字链接，不跟模块卡片抢注意力 */
+.dl-fallback {
+  margin: 18px 0 0;
+  text-align: center;
+  font-size: 13px;
+  color: var(--vp-c-text-3);
+}
+
+.dl-fallback a {
+  color: var(--vp-c-text-2);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color .2s;
+}
+
+.dl-fallback a:hover {
+  color: var(--vp-c-brand-1);
+}
+
+.dl-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.dl-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 11px;
+  background: var(--vp-c-default-soft);
+  color: var(--vp-c-text-1);
+}
+
+.dl-icon svg {
+  width: 21px;
+  height: 21px;
+}
+
+.dl-badge {
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.6;
+  color: var(--vp-c-brand-1);
+  background: var(--vp-c-brand-soft);
+}
+
+.dl-name {
+  margin: 0;
+  padding: 0;
+  border: none;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.dl-file {
+  margin: 7px 0 22px;
+  flex: 1;
+  font-family: var(--vp-font-family-mono);
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--vp-c-text-3);
+  word-break: break-all;
+}
+
+.dl-btn {
+  display: block;
+  padding: 10px 20px;
+  border-radius: 10px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  border: 1px solid var(--vp-c-divider);
+  background: var(--vp-c-bg);
+  transition: background-color .2s, border-color .2s, color .2s;
+}
+
+.dl-card:hover .dl-btn {
+  border-color: var(--vp-c-brand-1);
+  color: var(--vp-c-brand-1);
+}
+
+.dl-btn-brand {
+  border-color: transparent;
+  background: var(--vp-c-brand-1);
+  color: var(--vp-c-bg);
+}
+
+.dl-card:hover .dl-btn-brand {
+  border-color: transparent;
+  background: var(--vp-c-brand-2);
+  color: var(--vp-c-bg);
+}
+
+.dl-foot {
+  margin: 28px 0 0;
+  text-align: center;
+  font-size: 13px;
+  color: var(--vp-c-text-3);
+}
+
+.dl-foot a {
+  color: var(--vp-c-text-2);
+  text-decoration: none;
+  transition: color .2s;
+}
+
+.dl-foot a:hover {
+  color: var(--vp-c-brand-1);
+}
+
+.dl-dot {
+  margin: 0 8px;
+  opacity: .5;
+}
+
+@media (max-width: 640px) {
+  .dl-wrap {
+    padding: 56px 20px 72px;
+  }
+
+  .dl-head {
+    margin-bottom: 32px;
+  }
+
+  .dl-card-main {
+    max-width: 100%;
+  }
+
+  .dl-logo {
+    width: 64px;
+    height: 64px;
+  }
+
+  .dl-title {
+    font-size: 28px;
+  }
+}
