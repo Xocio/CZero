@@ -1,0 +1,90 @@
+name: Publish app rules
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: "输入 PUSH 确认把已审核规则提交到仓库"
+        required: true
+        default: ""
+      api_url:
+        description: "API URL"
+        required: true
+        default: "https://app.czeropage.top"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish-app-rules
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: ${{ inputs.confirm == 'PUSH' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Export approved rules
+        env:
+          APP_ADMIN_KEY: ${{ secrets.APP_ADMIN_KEY }}
+          API_URL: ${{ inputs.api_url }}
+        run: |
+          set -euo pipefail
+          [ -n "$APP_ADMIN_KEY" ] || { echo "缺少 APP_ADMIN_KEY"; exit 1; }
+          curl --fail --silent --show-error \
+            -X POST "${API_URL%/}/api/admin/rules/export" \
+            -H "Authorization: Bearer $APP_ADMIN_KEY" \
+            -H "Content-Type: application/json" \
+            --data '{}' > /tmp/app-rules-export.json
+          jq -e '.ok == true and (.approved_ids | length > 0) and (.app_json.apps | type == "array")' \
+            /tmp/app-rules-export.json >/dev/null
+          jq '.app_json' /tmp/app-rules-export.json > rules/app/app.json
+
+      - name: Validate snapshot
+        run: |
+          set -euo pipefail
+          jq -e '
+            (.version | type == "number") and
+            (.apps | type == "array") and
+            all(.apps[];
+              (.package | type == "string") and
+              (.name | type == "string") and
+              (.enabled == true) and
+              (.paths | type == "array") and
+              all(.paths[]; type == "string" and startswith("/"))
+            )
+          ' rules/app/app.json >/dev/null
+
+      - name: Commit published snapshot
+        id: commit
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- rules/app/app.json; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "规则快照没有文件差异，继续执行发布回调"
+            exit 0
+          fi
+          VERSION=$(jq -r '.version' rules/app/app.json)
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add rules/app/app.json
+          git commit -m "rules(app): publish v${VERSION}"
+          git push
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Mark rules as published
+        env:
+          APP_ADMIN_KEY: ${{ secrets.APP_ADMIN_KEY }}
+          API_URL: ${{ inputs.api_url }}
+        run: |
+          set -euo pipefail
+          jq '{ids: .approved_ids, version: .app_json.version}' /tmp/app-rules-export.json \
+            > /tmp/app-rules-published.json
+          curl --fail --silent --show-error \
+            -X POST "${API_URL%/}/api/admin/rules/published" \
+            -H "Authorization: Bearer $APP_ADMIN_KEY" \
+            -H "Content-Type: application/json" \
+            --data-binary @/tmp/app-rules-published.json
