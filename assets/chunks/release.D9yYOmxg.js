@@ -1,0 +1,1 @@
+const e="v1.0.3",a="2026-07-30",c={file:"CZero_v1.0.3.zip",sha256:"387c03d4c2c41ea4b82aed47ad7d705c46457848f0bcb25fb6be2f0e81d5a850"},d={file:"CZeroX_v1.0.3.apk",sha256:"cd25e66c424b34695a610b5f8b784186f865c849bb83abdd3ff4841d9bc41251"},b={version:e,date:a,module:c,app:d};export{b as r};
