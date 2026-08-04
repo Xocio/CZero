@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "apps": [
+    {
+      "package": "tv.danmaku.bili",
+      "name": "哔哩哔哩",
+      "enabled": true,
+      "paths": [
+        "/storage/emulated/0/Android/data/tv.danmaku.bili/cache"
+      ]
+    }
+  ]
+}
