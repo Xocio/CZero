@@ -67,8 +67,8 @@ CZero 是一个 Android Root 清理模块，为常见的高频应用提供缓存
 
 <a href="https://www.star-history.com/?repos=Xocio%2FCZero&type=timeline&logscale=&legend=top-left">
  <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=Xocio/CZero&type=timeline&theme=dark&logscale&legend=top-left&sealed_token=pXWo7kQsGbOFDCFgEbN_wl9ms9C4lFkx56igL68Ijgqk4W8ruW2uTAlJNrT8XA-9TjX-nCkzyFTRRa0xF7VKNbN_Xqw-x3hF2RLcNGOML0hVoWRKFVMkqR6p1Ivodq3SHptxfMNg7nT6doyzlcdgJ5JU9KZKsRbmIVpmLXjTlYY60BeUak0ciGFMe8y9" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=Xocio/CZero&type=timeline&logscale&legend=top-left&sealed_token=pXWo7kQsGbOFDCFgEbN_wl9ms9C4lFkx56igL68Ijgqk4W8ruW2uTAlJNrT8XA-9TjX-nCkzyFTRRa0xF7VKNbN_Xqw-x3hF2RLcNGOML0hVoWRKFVMkqR6p1Ivodq3SHptxfMNg7nT6doyzlcdgJ5JU9KZKsRbmIVpmLXjTlYY60BeUak0ciGFMe8y9" />
-   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=Xocio/CZero&type=timeline&logscale&legend=top-left&sealed_token=pXWo7kQsGbOFDCFgEbN_wl9ms9C4lFkx56igL68Ijgqk4W8ruW2uTAlJNrT8XA-9TjX-nCkzyFTRRa0xF7VKNbN_Xqw-x3hF2RLcNGOML0hVoWRKFVMkqR6p1Ivodq3SHptxfMNg7nT6doyzlcdgJ5JU9KZKsRbmIVpmLXjTlYY60BeUak0ciGFMe8y9" />
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=Xocio/CZero&type=timeline&theme=dark&logscale&legend=top-left&sealed_token=twVK7kU7SjickXCW34YQxO2BJE8Ll27rIB3db1HiNE9oyq1tMAXVJy3TiSVIlrdDuAeF0VGVZEdJTbr2bIBoyyvYERJyDzdmRNbeOOwKSMJZRyid1w3R1pxSIclT5LPro3oFtNGwvcdokYqwmWLAIVDeIo_axyrSqJsR1o8BY-_KOHqAIEWhs6lAn4fa" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=Xocio/CZero&type=timeline&logscale&legend=top-left&sealed_token=twVK7kU7SjickXCW34YQxO2BJE8Ll27rIB3db1HiNE9oyq1tMAXVJy3TiSVIlrdDuAeF0VGVZEdJTbr2bIBoyyvYERJyDzdmRNbeOOwKSMJZRyid1w3R1pxSIclT5LPro3oFtNGwvcdokYqwmWLAIVDeIo_axyrSqJsR1o8BY-_KOHqAIEWhs6lAn4fa" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=Xocio/CZero&type=timeline&logscale&legend=top-left&sealed_token=twVK7kU7SjickXCW34YQxO2BJE8Ll27rIB3db1HiNE9oyq1tMAXVJy3TiSVIlrdDuAeF0VGVZEdJTbr2bIBoyyvYERJyDzdmRNbeOOwKSMJZRyid1w3R1pxSIclT5LPro3oFtNGwvcdokYqwmWLAIVDeIo_axyrSqJsR1o8BY-_KOHqAIEWhs6lAn4fa" />
  </picture>
 </a>
