@@ -1,5 +1,5 @@
 name: Deploy docs
-
+run-name: Deployment documentation site
 on:
   push:
     branches: [main]
