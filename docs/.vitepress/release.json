@@ -1,12 +1,12 @@
 {
-  "version": "v1.2.6",
-  "date": "2026-09-23",
+  "version": "v1.2.7",
+  "date": "2026-09-25",
   "module": {
-    "file": "CZero_v1.2.6.zip",
-    "sha256": "f7dd05c65f131dbfbe0d6a19e4ff6f8e41a7b5b552fcabfd7a9bd64842c758da"
+    "file": "CZero_v1.2.7.zip",
+    "sha256": "90112b6a13818cfba85893f64bbe42beef36497b5c8c4b763749aeeaf2482045"
   },
   "app": {
-    "file": "CZeroX_v1.2.6.apk",
-    "sha256": "219907a16352795e5960faf2ea157f791b009cd6cc971b1c20af8b97734205af"
+    "file": "CZeroX_v1.2.7.apk",
+    "sha256": "ffe5dd5328753e94bc3293fc3d3cd9eacc260100834f68d1fa46aa3fc55770f7"
   }
 }
