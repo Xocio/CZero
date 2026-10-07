@@ -1,5 +1,9 @@
 # Configuration
 
+::: info Shizuku edition
+This page describes the Root edition. The Shizuku edition has no module directory; the app deploys and manages the configuration itself, so edit it through CZeroX only. Its `gc` section has no trigger-condition fields, and there is no `freezer` section. See [Choosing an Edition](/en/guide/editions).
+:::
+
 All of CZero's behavior lives in a single config file:
 
 ```
@@ -26,9 +30,10 @@ This is the default `config.json` shipped with the module:
   },
   "app_clean": {
     "detect_schedule": { "every": "PT5M" },
-    "wechat": { "enabled": true, "enhanced": false },
-    "qq":     { "enabled": true, "enhanced": false },
-    "douyin": { "enabled": true, "enhanced": false },
+    "min_interval_hours": 12,
+    "wechat": { "enabled": true },
+    "qq":     { "enabled": true },
+    "douyin": { "enabled": true },
     "other":  { "enabled": true, "schedule": { "every": "P1D", "at": "03:00" } }
   },
   "suppress": {
@@ -60,6 +65,26 @@ This is the default `config.json` shipped with the module:
   "empty_folder": {
     "enabled": true,
     "schedule": { "every": "P1D", "at": "04:00" }
+  },
+  "file_sort": {
+    "enabled": false,
+    "root": "/storage/emulated/0/CZero",
+    "quiet_sec": 60,
+    "depth": 3,
+    "duplicates": true,
+    "schedule": { "every": "P1D", "at": "05:00" },
+    "folders": {
+      "package": "Apps",
+      "archive": "Archives",
+      "document": "Documents",
+      "image": "Images",
+      "video": "Videos",
+      "audio": "Audio",
+      "code": "Code",
+      "font": "Fonts",
+      "other": "Others",
+      "duplicate": "Duplicates"
+    }
   }
 }
 ```
@@ -80,14 +105,16 @@ Every component carries its own defaults. A single field that is absent or fails
 | `log` | bool | `false` | Unified logging switch |
 | `notification` | bool | `false` | Cleaning-complete notification (incl. Dynamic Island) |
 | `temporal_barrier_days` | int | `3` | Temporal barrier: only clean files older than N days, `0` = disabled |
-| `recycle_keep_days` | int | `7` | **Optional.** Recycle-bin retention in days; `0` or absent means 7 |
+| `recycle_enabled` | bool | `true` | **Optional.** Recycle-bin switch; when off, cleaning deletes permanently and cannot be undone |
+| `recycle_keep_days` | int | `7` | **Optional.** Recycle-bin retention in days; `0` or absent means 7. Only affects records created afterwards |
 
 ### app_clean
 
 | Field | Type | Description |
 |---|---|---|
 | `detect_schedule` | schedule | Frequency of foreground detection (minutes/hours only) |
-| `wechat` / `qq` / `douyin` | object | Each app's `enabled` and `enhanced` (enhanced mode) flags |
+| `min_interval_hours` | int | Minimum interval between two automatic cleans of the same app (hours), default `12` |
+| `wechat` / `qq` / `douyin` | object | Each app's `enabled` flag |
 | `other.enabled` | bool | Other-apps cleaning switch |
 | `other.schedule` | schedule | Schedule for other-apps cleaning (multi-day + time allowed) |
 
@@ -154,6 +181,22 @@ fstrim. Scheduled **independently** of GC, with no interaction between the two.
 | `enabled` | bool | Empty-folder cleanup switch |
 | `schedule` | schedule | Schedule (multi-day + time allowed) |
 
+### file_sort
+
+File sorting (generally available in the Root edition, BETA in the Shizuku edition). See [Features · File sorting](/en/guide/features#file-sorting).
+
+| Field | Type | Default | Description |
+|---|---|---|---|
+| `enabled` | bool | `false` | Automatic sorting switch; manual sorting in CZeroX still works when off |
+| `root` | string | `/storage/emulated/0/CZero` | Sorting destination; must be a full path starting with `/` |
+| `quiet_sec` | int | `60` | How long a file must sit untouched after being written before it is moved (seconds), 0–3600 |
+| `depth` | int | `3` | Levels to scan below each source folder; `0` = unlimited |
+| `duplicates` | bool | `true` | Whether same-name, same-size files go to a separate duplicates folder |
+| `schedule` | schedule | `P1D` + `05:00` | Fallback schedule; sorting is normally triggered by file writes and this catches anything missed |
+| `folders` | object | see the example above | Folder name for each category; must not contain `/` |
+
+Source folders and per-category switches are managed in CZeroX.
+
 ## The schedule object
 
 Every `schedule` / `detect_schedule` uses the same shape:
@@ -172,5 +215,6 @@ A few kinds of data are bulky or differently shaped, so they are kept out of `co
 - Per-app cache rules
 - App lists for background suppression and fine-grained suppression
 - The empty-folder sweep scope and its whitelist
+- File-sorting source folders
 
 Choosing to inherit during a reinstall carries all of these over.

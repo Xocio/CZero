@@ -53,7 +53,27 @@ Consequently, never observing it run usually indicates the device is in good sha
 - **Background suppression** — terminates background processes outright, freeing memory immediately at the cost of a full reload next launch.
 - **Fine-grained suppression** — suspends the app without terminating it, stopping CPU usage while preserving its full runtime state for instant resumption.
 
-Use the former to reclaim resources thoroughly, the latter to preserve the app's live state. Both can be enabled at once. Fine-grained suppression requires Android 12 or newer.
+Use the former to reclaim resources thoroughly, the latter to preserve the app's live state. Both can be enabled at once. Fine-grained suppression requires Android 12 or newer, plus LSPosed with the System Framework scope ticked for CZeroX.
+
+## Fine-grained suppression isn't taking effect. What should I do?
+
+First confirm in CZeroX's fine-grained suppression page that it is switched on and that you have rebooted, then open **Effect check**, which tests the framework hook, the freezer and vendor restrictions item by item and shows which one fails. The usual causes are the System Framework scope not being ticked for CZeroX in LSPosed, or a kernel without app-freezing support. If it still doesn't work, use "Request adaptation for my device" to package the information and send it to the developer.
+
+## What is the difference between the Root and Shizuku editions?
+
+Cleaning rules and most features are the same; the difference is how privileges are obtained and the feature set that follows. The Shizuku edition needs no root or module, but has no fine-grained suppression or Storage tab, and F2FS reclamation is done by the system's idle maintenance. See [Choosing an Edition](/en/guide/editions).
+
+## The Shizuku edition stopped cleaning after a reboot
+
+Shizuku started via ADB stops on every reboot and has to be started once more before scheduled cleaning resumes; Shizuku started via Root is available automatically after boot. If Shizuku is running but tasks still do not run, tap "Redeploy" on the app's status page.
+
+## What does file sorting move?
+
+Only files inside the source folders you added, down to the configured scan depth, are moved into the sorting folder by type. Unfinished downloads and freshly written files are skipped, and the folders themselves are never moved. Every move is recorded in the sorting history, where you can restore a whole day or only selected files. The feature is off by default. It is free in the Root edition; in the Shizuku edition it is still BETA and supporter-unlocked.
+
+## Which features require a donation?
+
+Per-app cache cleaning, fine-grained suppression, cleaning trends and daily history, shared cloud rules, app and module update checks, and the Zero assistant are supporter-unlocked. WeChat / QQ / Douyin cleaning, custom rules and whitelist, F2FS reclamation, empty-folder cleanup, basic background suppression and the recycle bin are free; file sorting is free in the Root edition and supporter-unlocked in the Shizuku edition. For an activated order, the bound devices can be viewed in Device management; unbinding an old device after changing phones frees its slot.
 
 ## Will reinstalling or updating lose my settings?
 

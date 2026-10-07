@@ -5,6 +5,11 @@
 - Android 9+（API 28），`arm64-v8a`
 - Root 方案：Magisk、KernelSU 或 APatch
 - F2FS `/data` 分区（仅 GC 功能需要，其余功能不受影响）
+- LSPosed（仅精细化压制需要，其余功能不受影响）
+
+::: info 使用 Shizuku 版？
+无需 Root 与模块，也没有刷入步骤：安装 CZeroX（Shizuku 版）并启动 Shizuku，打开应用后按提示授权，应用会自动完成清理程序与规则的部署。之后的使用与 Root 版一致，差异与注意事项见[版本选择](/guide/editions)。以下步骤针对 Root 版。
+:::
 
 ## 安装步骤
 

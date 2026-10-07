@@ -1,6 +1,6 @@
 # What is CZero
 
-CZero is an Android root module that cleans the cache of frequently used apps, and adds background suppression, empty-folder cleanup, F2FS garbage collection and fstrim.
+CZero is an Android root module that cleans the cache of frequently used apps, and adds background suppression, fine-grained suppression, empty-folder cleanup, file sorting, F2FS garbage collection and fstrim.
 
 The module has no resident service — an extremely lightweight scheduling process triggers every task according to `config.json`, and configuration changes take effect immediately. Day-to-day operation goes through the native companion app **CZeroX**.
 
@@ -23,8 +23,11 @@ The **recycle bin** produced by cleaning is not inside the module directory; it 
 
 ## Requirements
 
+CZeroX comes in a Root edition and a Shizuku edition; see [Choosing an Edition](/en/guide/editions). The list below is for the Root edition; the Shizuku edition needs no root or module, only a working Shizuku.
+
 - Android 9+ (API 28), `arm64-v8a`
 - Root via Magisk, KernelSU, or APatch
 - F2FS `/data` partition (only for the GC feature; everything else works regardless)
+- LSPosed (only for fine-grained suppression; everything else works regardless)
 
 Ready? Head to [Install & Setup](/en/guide/getting-started).

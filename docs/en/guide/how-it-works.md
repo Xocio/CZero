@@ -42,7 +42,7 @@ Using WeChat cache cleaning as an example:
 
 1. The task fires and the app's current state is checked;
 2. If it is in the foreground, or the foreground is a game, the round is skipped;
-3. Otherwise cleaning runs, constrained by enhanced mode and the temporal barrier;
+3. Otherwise cleaning runs, constrained by the clean interval and the temporal barrier;
 4. Stats are updated, a log line is written if enabled, and progress and results are reported to CZeroX.
 
 ## Why this design

@@ -10,16 +10,27 @@
   <a href="https://github.com/Xocio/CZero/releases"><img src="https://img.shields.io/github/v/release/Xocio/CZero?label=Release&color=orange" alt="Release"></a>
   <a href="https://czeropage.top/"><img src="https://img.shields.io/badge/%E6%96%87%E6%A1%A3-Docs-blue" alt="Docs"></a>
   <img src="https://img.shields.io/badge/ROOT-Magisk%20%7C%20KernelSU%20%7C%20APatch-red" alt="Root">
+  <img src="https://img.shields.io/badge/%E5%85%8D%20ROOT-Shizuku-2E7D32" alt="Shizuku">
   <a href="https://t.me/CZeroRelease"><img src="https://img.shields.io/badge/Telegram-频道-26A5E4?logo=telegram&logoColor=white" alt="Telegram Channel"></a>
 </p>
 
-<p align="center"><b>简体中文</b> · <a href="README_en.md">English</a></p>
+<p align="center"><b>简体中文</b> · <a href="README_en.md">English</a> · <a href="README_ru.md">Русский</a></p>
 
 ---
 
-CZero 是一个 Android Root 清理模块，为常见的高频应用提供缓存清理，并涵盖后台压制、空文件夹清理与 F2FS 垃圾回收等功能。
+CZero 是一套 Android 清理方案，为常见的高频应用提供缓存清理，并涵盖后台压制、精细化压制、空文件夹清理、文件归类、F2FS 垃圾回收与 fstrim 等功能。
 
-模块本身无常驻服务，由一个轻量 C++ 守护进程按 `config.json` 调度所有任务，配置修改即时生效。日常修改操作通过原生配套应用 **CZeroX** 完成。
+没有常驻服务，所有任务由一个极轻量的原生调度进程按 `config.json` 触发，配置修改即时生效。日常操作通过原生配套应用 **CZeroX** 完成。
+
+## 两个版本
+
+| | **Root 版** | **Shizuku 版** |
+|---|---|---|
+| 授权方式 | Magisk / KernelSU / APatch | Shizuku |
+| 组成 | CZero 模块 + CZeroX（模块内置，刷入后自动安装） | 仅 CZero，清理程序随应用自带 |
+| 功能范围 | 全部功能 | 不含精细化压制与存储面板；F2FS 回收由系统空闲维护完成 |
+
+两版使用同一个应用标识，不能同时安装。详细对比见 [版本选择](https://czeropage.top/guide/editions)。
 
 ## 社区
 
@@ -34,18 +45,35 @@ CZero 是一个 Android Root 清理模块，为常见的高频应用提供缓存
 
 ## 功能
 
-- **定向缓存清理**——微信 / QQ / 抖音各自独立的清理脚本，按计划触发，并先检测应用是否真的在运行；每个 App 可单独开启增强模式。
-- **后台压制**——周期性检测并压制在后台运行的 微信 / QQ / 支付宝，仅保留通知，最大程度减少内存占用。
-- **F2FS GC**——监控脏段数量，超阈值时执行垃圾回收。
-- **其他清理**——自定义路径清理（`clean_paths.prop`）与空文件夹清扫。
-- **配置热重载**——守护进程监视 `config.json`，保存即生效。
+- **定向缓存清理** —— 微信 / QQ / 抖音各自独立的清理器，覆盖应用双开；清理前检测前台与游戏状态，同一应用两次清理之间保持最小间隔。
+- **后台压制** —— 周期性结束目标应用的后台子进程，主进程与消息推送不受影响。
+- **精细化压制**（Root 版，BETA） —— 挂起后台应用而不结束进程，运行状态完整保留、切回即时恢复，并提供生效检测。
+- **文件归类** —— 按类型将下载目录等位置的文件整理进分类目录，支持归类历史与完整还原。
+- **F2FS 垃圾回收与 fstrim** —— 仅在设备真正空闲时执行，维持存储空间与长期写入性能。
+- **自定义规则与规则源** —— 自行声明清理路径与白名单，或订阅第三方规则源，每天自动更新。
+- **回收站** —— 清理先移入回收站，默认保留 7 天，可原样恢复。
+- **Zero 智能助手** —— 以对话方式扫描存储、预估清理效果、管理规则与压制，任何更改都需确认后执行。
+- **配置热重载** —— 修改即时生效；配置损坏时保留上一份有效任务，不会中断。
 
-## 使用
+## 下载与安装
 
-1. 在 [Releases](https://github.com/Xocio/CZero/releases) 下载最新模块 zip 与 配置应用 apk 。
-2. 用 Magisk / KernelSU / APatch 刷入，按音量键提示选择语言、是否继承旧配置。
-3. 重启，安装 **CZeroX** 后按需配置。
+前往 [下载页](https://czeropage.top/download-home)（国内直链）或 [Releases](https://github.com/Xocio/CZero/releases) 获取最新版本。
 
+| 文件 | 说明 |
+|---|---|
+| `CZero_<版本>.zip` | Root 版模块，已内置 Root 版 CZeroX |
+| `CZeroX_Root_<版本>.apk` | Root 版应用，仅在刷入后未能自动安装时使用 |
+| `CZero_Shizuku_<版本>.apk` | Shizuku 版应用 |
+
+**Root 版**
+
+1. 用 Magisk / KernelSU / APatch 刷入模块 zip，按音量键提示选择语言、是否继承旧配置。
+2. 重启，CZeroX 随模块自动安装。
+
+**Shizuku 版**
+
+1. 安装并启动 [Shizuku](https://shizuku.rikka.app/download/)。
+2. 安装 CZeroX（Shizuku 版），打开后按提示授权，应用会自动完成部署。
 
 ## CZeroX
 
@@ -53,7 +81,7 @@ CZero 是一个 Android Root 清理模块，为常见的高频应用提供缓存
 <tr>
 <td valign="top" width="50%">
 
-配套的原生 Jetpack Compose 应用，界面采用 [Miuix](https://compose-miuix-ui.github.io/miuix/) 风格。
+配套的原生 Jetpack Compose 应用，界面采用 [Miuix](https://compose-miuix-ui.github.io/miuix/) 风格，支持简体中文、English 与 Русский。
 
 </td>
 <td align="center" width="50%">
@@ -61,7 +89,6 @@ CZero 是一个 Android Root 清理模块，为常见的高频应用提供缓存
 </td>
 </tr>
 </table>
-
 
 ## Star History
 
@@ -72,3 +99,7 @@ CZero 是一个 Android Root 清理模块，为常见的高频应用提供缓存
    <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=Xocio/CZero&type=timeline&logscale&legend=top-left&sealed_token=twVK7kU7SjickXCW34YQxO2BJE8Ll27rIB3db1HiNE9oyq1tMAXVJy3TiSVIlrdDuAeF0VGVZEdJTbr2bIBoyyvYERJyDzdmRNbeOOwKSMJZRyid1w3R1pxSIclT5LPro3oFtNGwvcdokYqwmWLAIVDeIo_axyrSqJsR1o8BY-_KOHqAIEWhs6lAn4fa" />
  </picture>
 </a>
+
+## 许可证
+
+[GNU General Public License v3.0](LICENSE)
