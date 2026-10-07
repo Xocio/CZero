@@ -1,6 +1,6 @@
 # 什么是 CZero
 
-CZero 是一个 Android Root 清理模块，为常见的高频应用提供缓存清理，并涵盖后台压制、空文件夹清理、F2FS 垃圾回收与 fstrim。
+CZero 是一个 Android Root 清理模块，为常见的高频应用提供缓存清理，并涵盖后台压制、精细化压制、空文件夹清理、文件归类、F2FS 垃圾回收与 fstrim。
 
 模块本身没有常驻服务，由一个极轻量的调度进程按 `config.json` 触发所有任务，配置修改即时生效。日常操作通过原生配套应用 **CZeroX** 完成。
 
@@ -23,8 +23,11 @@ CZero 是一个 Android Root 清理模块，为常见的高频应用提供缓存
 
 ## 环境要求
 
+CZeroX 分为 Root 版与 Shizuku 版，区别见[版本选择](/guide/editions)。以下为 Root 版的要求；Shizuku 版无需 Root 与模块，需要可用的 Shizuku。
+
 - Android 9+（API 28），`arm64-v8a`
 - Root 方案：Magisk、KernelSU 或 APatch
 - F2FS `/data` 分区（仅 GC 功能需要，其余功能不受影响）
+- LSPosed（仅精细化压制需要，其余功能不受影响）
 
 准备好后，前往 [安装与上手](/guide/getting-started)。

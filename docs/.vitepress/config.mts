@@ -11,7 +11,7 @@ const release = JSON.parse(
 export default defineConfig({
   base: '/',
   title: 'CZero',
-  description: 'Android Root 清理模块 · 缓存清理 / 后台压制 / F2FS GC',
+  description: 'Android 系统级清理优化',
   lang: 'zh-CN',
   cleanUrls: true,
   lastUpdated: true,
@@ -54,6 +54,7 @@ export default defineConfig({
               text: '入门',
               items: [
                 { text: '什么是 CZero', link: '/guide/what-is-czero' },
+                { text: '版本选择', link: '/guide/editions' },
                 { text: '安装与上手', link: '/guide/getting-started' },
                 { text: '工作原理', link: '/guide/how-it-works' },
               ],
@@ -115,6 +116,7 @@ export default defineConfig({
               text: 'Getting Started',
               items: [
                 { text: 'What is CZero', link: '/en/guide/what-is-czero' },
+                { text: 'Choosing an Edition', link: '/en/guide/editions' },
                 { text: 'Install & Setup', link: '/en/guide/getting-started' },
                 { text: 'How It Works', link: '/en/guide/how-it-works' },
               ],

@@ -1,5 +1,9 @@
 # 配置参考
 
+::: info Shizuku 版
+本页以 Root 版为准。Shizuku 版没有模块目录，配置由应用自行部署并管理，建议仅通过 CZeroX 修改；其 `gc` 一节没有触发条件类字段，也没有 `freezer` 一节。详见[版本选择](/guide/editions)。
+:::
+
 CZero 的全部行为集中在一份配置文件：
 
 ```
@@ -26,9 +30,10 @@ CZero 的全部行为集中在一份配置文件：
   },
   "app_clean": {
     "detect_schedule": { "every": "PT5M" },
-    "wechat": { "enabled": true, "enhanced": false },
-    "qq":     { "enabled": true, "enhanced": false },
-    "douyin": { "enabled": true, "enhanced": false },
+    "min_interval_hours": 12,
+    "wechat": { "enabled": true },
+    "qq":     { "enabled": true },
+    "douyin": { "enabled": true },
     "other":  { "enabled": true, "schedule": { "every": "P1D", "at": "03:00" } }
   },
   "suppress": {
@@ -60,6 +65,26 @@ CZero 的全部行为集中在一份配置文件：
   "empty_folder": {
     "enabled": true,
     "schedule": { "every": "P1D", "at": "04:00" }
+  },
+  "file_sort": {
+    "enabled": false,
+    "root": "/storage/emulated/0/CZero",
+    "quiet_sec": 60,
+    "depth": 3,
+    "duplicates": true,
+    "schedule": { "every": "P1D", "at": "05:00" },
+    "folders": {
+      "package": "Apps",
+      "archive": "Archives",
+      "document": "Documents",
+      "image": "Images",
+      "video": "Videos",
+      "audio": "Audio",
+      "code": "Code",
+      "font": "Fonts",
+      "other": "Others",
+      "duplicate": "Duplicates"
+    }
   }
 }
 ```
@@ -80,14 +105,16 @@ CZero 的全部行为集中在一份配置文件：
 | `log` | bool | `false` | 统一日志开关 |
 | `notification` | bool | `false` | 清理完成通知（含超级岛） |
 | `temporal_barrier_days` | int | `3` | 时序屏障：只清理 N 天前的文件，`0` = 不启用 |
-| `recycle_keep_days` | int | `7` | **可选**。回收站保留天数，`0` 或缺省即 7 天 |
+| `recycle_enabled` | bool | `true` | **可选**。回收站开关；关闭后清理将直接彻底删除，无法恢复 |
+| `recycle_keep_days` | int | `7` | **可选**。回收站保留天数，`0` 或缺省即 7 天；仅影响之后新产生的记录 |
 
 ### app_clean
 
 | 字段 | 类型 | 说明 |
 |---|---|---|
 | `detect_schedule` | schedule | 检测应用前台状态的频率（仅分/时） |
-| `wechat` / `qq` / `douyin` | object | 各应用的 `enabled` 与 `enhanced`（增强模式）开关 |
+| `min_interval_hours` | int | 同一应用两次自动清理的最小间隔（小时），默认 `12` |
+| `wechat` / `qq` / `douyin` | object | 各应用的 `enabled` 开关 |
 | `other.enabled` | bool | 其他应用清理开关 |
 | `other.schedule` | schedule | 其他应用清理的执行计划（可多天 + 时刻） |
 
@@ -154,6 +181,22 @@ fstrim，与 GC **独立调度**、互不影响。
 | `enabled` | bool | 空文件夹清理开关 |
 | `schedule` | schedule | 执行计划（可多天 + 时刻） |
 
+### file_sort
+
+文件归类（Root 版已正式提供，Shizuku 版为 BETA），详见[功能详解 · 文件归类](/guide/features#文件归类)。
+
+| 字段 | 类型 | 默认 | 说明 |
+|---|---|---|---|
+| `enabled` | bool | `false` | 自动归类开关；关闭时仍可在 CZeroX 中手动归类 |
+| `root` | string | `/storage/emulated/0/CZero` | 归类目录，需为以 `/` 开头的完整路径 |
+| `quiet_sec` | int | `60` | 文件写入完成后静置多久再移动（秒），范围 0–3600 |
+| `depth` | int | `3` | 来源目录向下扫描的层数，`0` = 不限层级 |
+| `duplicates` | bool | `true` | 同名且同大小的文件是否移入重复目录 |
+| `schedule` | schedule | `P1D` + `05:00` | 兜底执行计划；平时由文件写入触发，该计划用于补漏 |
+| `folders` | object | 见上方示例 | 各分类的目录名，不能包含 `/` |
+
+来源目录与各分类的启停在 CZeroX 中管理。
+
 ## schedule 对象
 
 所有 `schedule` / `detect_schedule` 都采用同一种写法：
@@ -172,5 +215,6 @@ fstrim，与 GC **独立调度**、互不影响。
 - 按应用组织的缓存规则
 - 后台压制与精细化压制的应用名单
 - 空文件夹的清扫范围与白名单
+- 文件归类的来源目录
 
 重装模块时选择继承，这些都会被沿用。

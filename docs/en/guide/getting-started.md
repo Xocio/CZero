@@ -5,6 +5,11 @@
 - Android 9+ (API 28), `arm64-v8a`
 - Root via Magisk, KernelSU, or APatch
 - F2FS `/data` partition (only for the GC feature; everything else works regardless)
+- LSPosed (only for fine-grained suppression; everything else works regardless)
+
+::: info Using the Shizuku edition?
+No root and no module, so nothing to flash: install CZeroX (Shizuku edition), start Shizuku, open the app and grant access when prompted; the app deploys the cleaning programs and rules by itself. Usage afterwards matches the Root edition; see [Choosing an Edition](/en/guide/editions) for differences and notes. The steps below are for the Root edition.
+:::
 
 ## Installation
 
