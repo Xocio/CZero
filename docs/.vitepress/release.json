@@ -12,5 +12,11 @@
     "sha256": "a51b54ff3df31be457f4198463f5374a681b85cf76a7e755f9f06bb81ccc39b4",
     "version": "v1.3.0",
     "date": "2026-10-07"
+  },
+  "shizuku": {
+    "file": "CZero_Shizuku_v1.3.0.apk",
+    "sha256": "628fe06b352e80993b9fff5fe9c23274948c007b08f5b7936e60c8e603920dcb",
+    "version": "v1.3.0",
+    "date": "2026-10-07"
   }
 }
