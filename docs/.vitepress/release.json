@@ -1,22 +1,22 @@
 {
-  "version": "v1.3.2",
-  "date": "2026-10-31",
+  "version": "v1.3.3",
+  "date": "2026-11-22",
   "module": {
-    "file": "CZero_v1.3.2.zip",
-    "sha256": "c0ba20d4cd211e6c574f793f34dd3864371ff7ff42c990d0562067ebe1723051",
-    "version": "v1.3.2",
-    "date": "2026-10-31"
+    "file": "CZero_v1.3.3.zip",
+    "sha256": "ccda90750a5283cf5c20d22bc700b1d49e6a555fd5a30fa5fa3d90a3ad6a393e",
+    "version": "v1.3.3",
+    "date": "2026-11-22"
   },
   "app": {
-    "file": "CZeroX_Root_v1.3.2.apk",
-    "sha256": "af18e048cfcb5cb61e68bb6a6b4f13551e93437bd02368e03d7b00ff506754bd",
-    "version": "v1.3.2",
-    "date": "2026-10-31"
+    "file": "CZeroX_Root_v1.3.3.apk",
+    "sha256": "eb3cb11be6ad792704061816cdac7e720bf5449572a1cf579d20f7235afb66c2",
+    "version": "v1.3.3",
+    "date": "2026-11-22"
   },
   "shizuku": {
-    "file": "CZero_Shizuku_v1.3.2.apk",
-    "sha256": "83735877abd250f1e73bcb8cc79eb14d0287376f9a8b53a76c92845a62e7943c",
-    "version": "v1.3.2",
-    "date": "2026-10-31"
+    "file": "CZero_Shizuku_v1.3.3.apk",
+    "sha256": "5abfa4b6b4c9311386325e212ffa5c216478b45184850cd6933f8c967e95af4d",
+    "version": "v1.3.3",
+    "date": "2026-11-22"
   }
 }
